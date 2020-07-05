@@ -1,0 +1,70 @@
+{
+  "project_info": {
+    "project_number": "1027917296845",
+    "firebase_url": "https://notes-app-30acf.firebaseio.com",
+    "project_id": "notes-app-30acf",
+    "storage_bucket": "notes-app-30acf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1027917296845:android:c06ca010a3077a83ada584",
+        "android_client_info": {
+          "package_name": "com.mii.miinotesapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1027917296845-5er0m7760jmuud30roi7d4qi1h5ot03c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPnerdFRB9ZcTJ9Ny6XD6yon1-0kH3iRs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1027917296845-5er0m7760jmuud30roi7d4qi1h5ot03c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1027917296845:android:47d4085d93409fa7ada584",
+        "android_client_info": {
+          "package_name": "com.mii.notes_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1027917296845-5er0m7760jmuud30roi7d4qi1h5ot03c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPnerdFRB9ZcTJ9Ny6XD6yon1-0kH3iRs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1027917296845-5er0m7760jmuud30roi7d4qi1h5ot03c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-1942646706163703~9476570276"
+    }
+  ],
+  "configuration_version": "1"
+}
