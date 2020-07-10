@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app/helper/helper_functions.dart';
-import 'package:notes_app/pages/note_display_page.dart';
+import 'package:notes_app/pages/special_notes_display.dart';
 import 'package:notes_app/services/database.dart';
 
-class NotesEditingPage extends StatefulWidget {
+class SpecialNotesEditingPage extends StatefulWidget {
   String title;
   String description;
   String category;
-  NotesEditingPage({Key key, this.title, this.description, this.category})
+  SpecialNotesEditingPage(
+      {Key key, this.title, this.description, this.category})
       : super(key: key);
 
   @override
-  _NotesEditingPageState createState() => _NotesEditingPageState();
+  _SpecialNotesEditingPageState createState() =>
+      _SpecialNotesEditingPageState();
 }
 
-class _NotesEditingPageState extends State<NotesEditingPage> {
+class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   String email;
-  String noteTitle;
+  String noteTitle = "";
   var _value;
 
   createNotes() {
@@ -28,12 +30,13 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
         "title": titleController.text,
         "description": descController.text,
         // "time": DateTime.now().millisecondsSinceEpoch,
-        "category": _value
+        "category": _value,
+        // "important": "false"
       };
 
-      databaseMethods.updateNotes(
-          notesRoomId: email,
+      databaseMethods.updateSpecialNotes(
           updateMap: notesMap,
+          notesRoomId: email,
           documentTitle: titleController.text);
     }
   }
@@ -51,11 +54,10 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
 
   @override
   Widget build(BuildContext context) {
-    widget.title != null ? noteTitle = widget.title : "";
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
-    titleController.text = widget.title;
     descController.text = widget.description;
+    titleController.text = widget.title != null ? widget.title : "";
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
@@ -69,10 +71,8 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                 Container(
                   height: screenHeight * 0.08,
                   width: screenWidth,
-                  decoration: BoxDecoration(
-//                    color: Color(0xFFF5F7FB),
-                      color:
-                          Theme.of(context).backgroundColor.withOpacity(0.8)),
+                  decoration:
+                      BoxDecoration(color: Theme.of(context).backgroundColor),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 16.0),
@@ -93,7 +93,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => NotesDisplayPage(
+                                      builder: (_) => SpecialNotesDisplayPage(
                                             title: titleController.text,
                                             description: descController.text,
                                             category: _value,
@@ -130,7 +130,6 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                         onChanged: (string) {
                           setState(() {
                             noteTitle = string;
-                            titleController.text = string;
                           });
                         },
                         decoration: InputDecoration(
@@ -146,7 +145,6 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                         height: 10.0,
                       ),
                       TextField(
-                        textCapitalization: TextCapitalization.sentences,
                         decoration: InputDecoration(
                             hintText: 'Enter Description',
                             hintStyle: TextStyle(
@@ -178,22 +176,22 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
   Widget dropDownButton() {
     return DropdownButton(
       items: [
-        DropdownMenuItem(
-            child: Text(
-              "Normal",
-              style: TextStyle(
-                  color: Theme.of(context).indicatorColor,
-                  fontWeight: FontWeight.bold),
-            ),
-            value: "normal"),
-        DropdownMenuItem(
-            child: Text(
-              "Work",
-              style: TextStyle(
-                  color: Theme.of(context).indicatorColor,
-                  fontWeight: FontWeight.bold),
-            ),
-            value: "work"),
+        // DropdownMenuItem(
+        //     child: Text(
+        //       "Normal",
+        //       style: TextStyle(
+        //           color: Theme.of(context).indicatorColor,
+        //           fontWeight: FontWeight.bold),
+        //     ),
+        //     value: "normal"),
+        // DropdownMenuItem(
+        //     child: Text(
+        //       "Work",
+        //       style: TextStyle(
+        //           color: Theme.of(context).indicatorColor,
+        //           fontWeight: FontWeight.bold),
+        //     ),
+        //     value: "work"),
         DropdownMenuItem(
             child: Text(
               "Special Notes",
@@ -210,14 +208,12 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
         });
       },
       value: _value,
-      style:
-          TextStyle(color: Theme.of(context).backgroundColor, fontSize: 16.0),
+      style: TextStyle(color: Theme.of(context).indicatorColor, fontSize: 16.0),
       hint: Text(
         "Select category",
-        style:
-            TextStyle(color: Theme.of(context).indicatorColor.withOpacity(0.7)),
+        style: TextStyle(color: Theme.of(context).indicatorColor),
       ),
-      dropdownColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+      dropdownColor: Theme.of(context).backgroundColor,
     );
   }
 }

@@ -63,8 +63,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                   width: screenWidth,
                   decoration: BoxDecoration(
 //                    color: Color(0xFFF5F7FB),
-                  color: Theme.of(context).indicatorColor.withAlpha(2)
-                  ),
+                      color: Theme.of(context).indicatorColor.withAlpha(2)),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 16.0),
@@ -95,7 +94,8 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                                 alertDialog();
                               }
                             },
-                            child: Icon(Icons.save, color: Theme.of(context).indicatorColor))
+                            child: Icon(Icons.save,
+                                color: Theme.of(context).indicatorColor))
                       ],
                     ),
                   ),
@@ -116,7 +116,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                   child: Column(
                     children: [
                       TextField(
-                        textCapitalization: TextCapitalization.sentences,
+                        textCapitalization: TextCapitalization.words,
                         style: TextStyle(
                             color: Theme.of(context).indicatorColor,
                             fontWeight: FontWeight.bold,
@@ -130,7 +130,10 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                         decoration: InputDecoration(
                             hintText: "Enter Title",
                             hintStyle: TextStyle(
-                                color: Theme.of(context).indicatorColor.withOpacity(0.5), fontSize: 18.0),
+                                color: Theme.of(context)
+                                    .indicatorColor
+                                    .withOpacity(0.5),
+                                fontSize: 18.0),
                             border: InputBorder.none),
                       ),
                       SizedBox(
@@ -141,10 +144,17 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                         decoration: InputDecoration(
                             hintText: 'Enter Description',
                             hintStyle: TextStyle(
-                                color: Theme.of(context).indicatorColor.withOpacity(0.5), fontSize: 16.0),
+                                color: Theme.of(context)
+                                    .indicatorColor
+                                    .withOpacity(0.5),
+                                fontSize: 16.0),
                             border: InputBorder.none),
                         controller: descController,
-                        style: TextStyle(color: Theme.of(context).indicatorColor.withOpacity(0.9), fontSize: 16.0),
+                        style: TextStyle(
+                            color: Theme.of(context)
+                                .indicatorColor
+                                .withOpacity(0.9),
+                            fontSize: 16.0),
                         keyboardType: TextInputType.multiline,
                         maxLines: null,
                       )
@@ -165,24 +175,27 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
         DropdownMenuItem(
             child: Text(
               "Normal",
-              style:
-                  TextStyle(color: Theme.of(context).indicatorColor, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Theme.of(context).indicatorColor,
+                  fontWeight: FontWeight.bold),
             ),
             value: "normal"),
         DropdownMenuItem(
             child: Text(
               "Work",
-              style:
-                  TextStyle(color: Theme.of(context).indicatorColor, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Theme.of(context).indicatorColor,
+                  fontWeight: FontWeight.bold),
             ),
             value: "work"),
-        DropdownMenuItem(
-            child: Text(
-              "Special Notes",
-              style:
-                  TextStyle(color: Theme.of(context).indicatorColor, fontWeight: FontWeight.bold),
-            ),
-            value: "special_notes"),
+        // DropdownMenuItem(
+        //     child: Text(
+        //       "Special Notes",
+        //       style: TextStyle(
+        //           color: Theme.of(context).indicatorColor,
+        //           fontWeight: FontWeight.bold),
+        //     ),
+        //     value: "special_notes"),
       ],
       onChanged: (value) {
         setState(() {
@@ -191,12 +204,13 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
         });
       },
       value: _value,
-      style: TextStyle(color:Theme.of(context).indicatorColor, fontSize: 16.0),
+      style: TextStyle(color: Theme.of(context).indicatorColor, fontSize: 16.0),
       hint: Text(
         "Select category",
-        style: TextStyle(color: Theme.of(context).indicatorColor.withOpacity(0.5)),
+        style:
+            TextStyle(color: Theme.of(context).indicatorColor.withOpacity(0.5)),
       ),
-      dropdownColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+      dropdownColor: Theme.of(context).backgroundColor,
     );
   }
 
@@ -205,11 +219,21 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Warning",style: TextStyle(color:Colors.black),),
-            content: Text('Select a category type',style: TextStyle(color:Colors.black),),
+            title: Text(
+              "Warning",
+              style: TextStyle(color: Colors.black),
+            ),
+            content: Text(
+              'Select a category type',
+              style: TextStyle(color: Colors.black),
+            ),
             actions: [
               FlatButton(
-                child: Text('Ok',style: TextStyle(color:Colors.black, fontSize: 16.0,)),
+                child: Text('Ok',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16.0,
+                    )),
                 onPressed: () {
                   Navigator.pop(context);
                 },

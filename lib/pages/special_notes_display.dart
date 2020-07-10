@@ -3,23 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/notes_editing_page.dart';
+import 'package:notes_app/pages/special_notes_creation.dart';
+import 'package:notes_app/pages/special_notes_editing.dart';
 import 'package:share/share.dart';
 
 import 'homepage.dart';
 
-class NotesDisplayPage extends StatefulWidget {
+class SpecialNotesDisplayPage extends StatefulWidget {
   final String title;
   final String description;
   final String category;
-
-  NotesDisplayPage({Key key, this.title, this.description, this.category})
+  SpecialNotesDisplayPage(
+      {Key key, this.title, this.description, this.category})
       : super(key: key);
 
   @override
-  _NotesDisplayPageState createState() => _NotesDisplayPageState();
+  _SpecialNotesDisplayPageState createState() =>
+      _SpecialNotesDisplayPageState();
 }
 
-class _NotesDisplayPageState extends State<NotesDisplayPage> {
+class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
   FlutterTts flutterTts = FlutterTts();
   bool isPlaying = false;
   String lang;
@@ -154,27 +157,24 @@ class _NotesDisplayPageState extends State<NotesDisplayPage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap:(){
+                      onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => NotesEditingPage(
-                                  title: widget.title,
-                                  description: widget.description,
-                                  category: widget.category,
-                                )));
+                                builder: (_) => SpecialNotesEditingPage(
+                                      title: widget.title,
+                                      description: widget.description,
+                                      category: widget.category,
+                                    )));
                       },
                       child: Container(
                         width: 50.0,
-                        height:50.0,
+                        height: 50.0,
                         decoration: BoxDecoration(
-                          color:Theme.of(context).primaryColor,
+                          color: Theme.of(context).primaryColor,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          Icons.edit,
-                          color:Colors.white
-                        ),
+                        child: Icon(Icons.edit, color: Colors.white),
                       ),
                     ),
                   ],

@@ -10,11 +10,12 @@ class OnBoardScreen extends StatefulWidget {
 
 class _OnBoardScreenState extends State<OnBoardScreen> {
   List<OnBoardModel> slides = new List<OnBoardModel>();
-  int currentIndex = 0;
-  PageController pageController = new PageController(initialPage: 1);
+  int currentIndex;
+  PageController pageController = new PageController(initialPage: 0);
 
   @override
   void initState() {
+    currentIndex = 0;
     slides = getSlides();
     super.initState();
   }
@@ -35,7 +36,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView.builder(
-        controller: pageController,
+          controller: pageController,
           itemCount: slides.length,
           onPageChanged: (val) {
             setState(() {
@@ -67,7 +68,9 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                             fontSize: 18),
                       ),
                       onTap: () {
-                        pageController.animateToPage(slides.length - 1, duration: Duration(milliseconds: 50), curve: Curves.linear);
+                        pageController.animateToPage(slides.length - 1,
+                            duration: Duration(milliseconds: 50),
+                            curve: Curves.linear);
                       },
                     ),
                     Row(
@@ -87,7 +90,9 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                             fontSize: 18),
                       ),
                       onTap: () {
-                        pageController.animateToPage(currentIndex + 1, duration: Duration(milliseconds: 100), curve: Curves.linear);
+                        pageController.animateToPage(currentIndex + 1,
+                            duration: Duration(milliseconds: 100),
+                            curve: Curves.linear);
                       },
                     ),
                   ],
@@ -95,12 +100,13 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
               ),
             )
           : GestureDetector(
-        onTap: (){
-          HelperFunction.saveOnBoardpageViewInSharePreference(true);
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>Authenticate()));
-        },
-            child: Container(
-        alignment: Alignment.center,
+              onTap: () {
+                HelperFunction.saveOnBoardpageViewInSharePreference(true);
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (_) => Authenticate()));
+              },
+              child: Container(
+                alignment: Alignment.center,
                 height: 60,
                 width: MediaQuery.of(context).size.width,
                 color: Theme.of(context).primaryColor,
@@ -109,7 +115,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                   style: TextStyle(color: Colors.white, fontSize: 22.0),
                 ),
               ),
-          ),
+            ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:notes_app/helper/authenticate.dart';
 import 'package:notes_app/helper/dark_theme_shared_preference.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/app_settings.dart';
@@ -81,6 +82,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       HelperFunction.saveUserLoggedInSharedPreference(false);
                       HelperFunction.saveUserProfileImageInSharedPreference(
                           null);
+                      HelperFunction.saveNameInSharedPreference(null);
+                      HelperFunction.saveUserEmailInSharedPreference(null);
+                      HelperFunction.saveSpecialNotesCountInSharedPreference(
+                          null);
+                      HelperFunction.saveNotesCountInSharedPreference(null);
                       Navigator.pop(context);
                       setState(() {
                         shouldLogOut = true;
@@ -251,12 +257,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.symmetric(
                       vertical: 16.0, horizontal: 16.0),
                   child: GestureDetector(
-                    onTap: () async{
+                    onTap: () async {
                       await signOutAlertBox();
-                      if(shouldLogOut == true){
+                      if (shouldLogOut == true) {
 //                        Navigator.pushReplacement(context,
 //                            MaterialPageRoute(builder: (_) => SignInPage()));
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>SignInPage()), (route) => false);
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => Authenticate()),
+                            (route) => false);
                       }
                     },
                     child: Row(
@@ -404,6 +413,7 @@ class SettingsWidget extends StatelessWidget {
       child: Center(
           child: Text(
         text,
+        textAlign: TextAlign.center,
         style: TextStyle(
             color: Colors.white, fontSize: 18.0, fontWeight: FontWeight.w500),
       )),

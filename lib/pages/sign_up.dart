@@ -3,6 +3,7 @@ import 'package:notes_app/helper/authenticate.dart';
 import 'package:notes_app/helper/dark_theme_shared_preference.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/helper/policy_dialog.dart';
+import 'package:notes_app/pages/sign_in.dart';
 import 'package:notes_app/services/auth.dart';
 import 'package:notes_app/services/database.dart';
 
@@ -33,76 +34,78 @@ class _SignUpPageState extends State<SignUpPage> {
   HelperFunction helperFunction = new HelperFunction();
   DarkThemePreference darkThemePreference = DarkThemePreference();
 
+  bool showEmailSnackBar;
+  bool isPassHidden;
+
   initState() {
     isEmailPresent = false;
+    showEmailSnackBar = false;
+    isPassHidden = true;
+    HelperFunction.isEmailAlreadyInUse(false);
     super.initState();
   }
 
-  signMeUp() async {
+  signUpUser() async {
     if (formKey.currentState.validate()) {
-      await authMethods
+      authMethods
           .signUpUsingEmail(
               email: emailController.text, password: passwordController.text)
-          .then((value) async{
-        Map<String, dynamic> userInfoMap = {
-          "userEmail": emailController.text,
-          "name": nameController.text,
-          "language": "en-US",
-          "pitch": 1.0,
-          "volume": 1.0
-        };
-//        HelperFunction.saveUserEmailInSharedPreference(emailController.text);
-//        HelperFunction.saveNameInSharedPreference(nameController.text);
-//        HelperFunction.saveUserLoggedInSharedPreference(true);
-//        HelperFunction.saveAssistantLangInSharedPreferences('en-US');
-//        HelperFunction.saveAssistantPicthInSharedPreference(1.0);
-//        HelperFunction.saveAssistantVolumeInSharedPreference(1.0);
-//        darkThemePreference.setDarkTheme(false);
-//
-        await HelperFunction.getIsEmailAlreadyInUse().then((value) {
-          if(value == true){
-            databaseMethods.uploadUserInfo(
-                userMap: userInfoMap, email: emailController.text);
-          }
+          .then((value) {
+        HelperFunction.getIsEmailAlreadyInUse().then((value) {
+          setState(() {
+            isEmailPresent = value;
+          });
         });
-      });
 
-      await HelperFunction.getIsEmailAlreadyInUse().then((value) {
-        setState(() {
-          isEmailPresent = value;
-        });
-      });
-      if (isEmailPresent == true) {
-        Future.delayed(Duration(seconds: 1), () {
+        if (value != null) {
+          setState(() {
+            showEmailSnackBar = true;
+          });
+          Map<String, dynamic> userInfoMap = {
+            "name": nameController.text,
+            "userEmail": emailController.text,
+            "isCheckedPolicy": false,
+            "isCheckedTermsAndCondition": false,
+            "language": "en-IN",
+            "pitch": 1.0,
+            "volume": 1.0
+          };
+
+          databaseMethods.uploadUserInfo(
+              email: emailController.text, userMap: userInfoMap);
+
           showDialog(
               context: context,
               builder: (context) {
                 return PolicyDialog(
                     fileName: 'privacy_policy.md',
                     onPressed: () {
+                      Map<String, dynamic> policyMap = {
+                        "isCheckedPolicy": true
+                      };
+                      databaseMethods.updateUserInfo(
+                          email: emailController.text, updateMap: policyMap);
                       showDialog(
                           context: context,
                           builder: (context) {
                             return PolicyDialog(
                               fileName: 'terms_and_conditions.md',
                               onPressed: () {
+                                Map<String, dynamic> termsMap = {
+                                  "isCheckedTermsAndCondition": true
+                                };
+                                databaseMethods.updateUserInfo(
+                                    email: emailController.text,
+                                    updateMap: termsMap);
                                 Navigator.pop(context);
                                 Navigator.pop(context);
-                                setState(() {
-                                  isPolicyShown = true;
-                                });
                               },
                             );
                           });
                     });
               });
-        });
-
-        setState(() {
-          isLoading = true;
-        });
-      }
-//      Navigator.pushReplacement(context, MaterialPageRoute(builder:(_)=>Authenticate()));
+        }
+      });
     }
   }
 
@@ -112,11 +115,13 @@ class _SignUpPageState extends State<SignUpPage> {
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.black87,
       key: signUpScaffoldKey,
       body: Container(
+        // margin: EdgeInsets.only(bottom: 65),
         alignment: Alignment.bottomCenter,
         color: Colors.black87,
-        padding: EdgeInsets.symmetric(vertical: 32.0),
+        padding: EdgeInsets.symmetric(vertical: 65.0),
         child: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
@@ -142,7 +147,11 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                         controller: nameController,
                         obscureText: false,
-                        style: TextStyle(fontSize: 16.0, color: Colors.white),
+                        textCapitalization: TextCapitalization.words,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.white,
+                        ),
                         decoration: InputDecoration(
                             hintText: "Name",
                             hintStyle: TextStyle(color: Colors.white),
@@ -175,11 +184,23 @@ class _SignUpPageState extends State<SignUpPage> {
                               : "Enter password with more than 6 characters";
                         },
                         controller: passwordController,
-                        obscureText: true,
+                        obscureText: isPassHidden,
                         style: TextStyle(fontSize: 16.0, color: Colors.white),
                         decoration: InputDecoration(
                             hintText: "Password",
                             hintStyle: TextStyle(color: Colors.white),
+                            suffix: GestureDetector(
+                              child: Icon(
+                                Icons.remove_red_eye,
+                                color:
+                                    isPassHidden ? Colors.grey : Colors.white,
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  isPassHidden = !isPassHidden;
+                                });
+                              },
+                            ),
                             prefixIcon: Icon(
                               Icons.lock,
                               color: Colors.white,
@@ -190,23 +211,32 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 SizedBox(height: 25.0),
                 GestureDetector(
-                  onTap: () async {
-                    await signMeUp();
-                    final snackBar = SnackBar(
-                      content: Text('Check Your email'),
-                      duration: Duration(seconds: 2),
+                  onTap: () {
+                    final initialSnackBar = SnackBar(
+                      content: Text("Loading .. please wait"),
+                      duration: Duration(seconds: 1),
                     );
-                    final errorSnackBar = SnackBar(
-                      content: Text(
-                        'Email Already In User',
-                      ),
-                      duration: Duration(seconds: 2),
+                    signUpScaffoldKey.currentState
+                        .showSnackBar(initialSnackBar);
+                    signUpUser();
+
+                    final emailSnackbar = SnackBar(
+                      content: Text('Please check your email for verification'),
+                      duration: Duration(seconds: 7),
                     );
-                    isEmailPresent
-                        ? signUpScaffoldKey.currentState
-                            .showSnackBar(snackBar)
-                        : signUpScaffoldKey.currentState.showSnackBar(errorSnackBar);
-                    HelperFunction.isEmailAlreadyInUse(false);
+                    final isEmailPresentSnackBar = SnackBar(
+                      content: Text('This email is already registered'),
+                      duration: Duration(seconds: 5),
+                    );
+                    if (isEmailPresent == false || showEmailSnackBar == true) {
+                      signUpScaffoldKey.currentState
+                          .showSnackBar(emailSnackbar);
+                    } else if (isEmailPresent == true ||
+                        showEmailSnackBar == false) {
+                      signUpScaffoldKey.currentState
+                          .showSnackBar(isEmailPresentSnackBar);
+                    }
+                    // : Container();
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 20.0),

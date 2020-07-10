@@ -17,7 +17,8 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final GlobalKey<ScaffoldState> signInScaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> signInScaffoldKey =
+      new GlobalKey<ScaffoldState>();
   final formKey = GlobalKey<FormState>();
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
@@ -32,78 +33,75 @@ class _SignInPageState extends State<SignInPage> {
   bool isValidAttempt;
   bool isHidden;
 
-  initState(){
+  bool isSecondEmailValid;
+  bool isSecondAttemptValid;
+  bool isSecondPassValid;
+
+  initState() {
     isHidden = true;
+    isSecondEmailValid = false;
+    isSecondAttemptValid = true;
+    isSecondPassValid = false;
     HelperFunction.saveUserEmailCorrectState(true);
     HelperFunction.saveUserPasswordCorrectState(true);
     HelperFunction.saveIsValidAttemptState(true);
     super.initState();
   }
 
-  signIn() {
-
-//    setState((){
-//      isEmailCorrect = true;
-//      isPasswordCorrect = true;
-//    });
+  userSignIn() {
     if (formKey.currentState.validate()) {
-
-      authMethods.SignInUsingEmail(
+      authMethods
+          .signInUsingEmail(
               email: emailController.text, password: passwordController.text)
-          .then((value) async{
-
-            await HelperFunction.getUserPasswordCorrectState().then((value) {
-              setState(() {
-                isPasswordCorrect = value;
-              });
-            });
-
-            await HelperFunction.getUserEmailCorrectState().then((value) {
-              setState(() {
-                isEmailCorrect = value;
-              });
-            });
-
-            await HelperFunction.getUserAttemptState().then((value) {
-              setState(() {
-                isValidAttempt = value;
-              });
-            });
-        if (isPasswordCorrect == true && isEmailCorrect == true && value != null) {
-          HelperFunction.saveUserEmailInSharedPreference(emailController.text);
-
-          databaseMethods
-              .getUserByUserEmail(email: emailController.text)
-              .then((val) {
-            snapshotUserInfo = val;
-            HelperFunction.saveNameInSharedPreference(
-                snapshotUserInfo.documents[0].data["name"]);
-            HelperFunction.saveUserEmailInSharedPreference(
-                snapshotUserInfo.documents[0].data["userEmail"]);
-            HelperFunction.saveAssistantLangInSharedPreferences(
-                snapshotUserInfo.documents[0].data['language']);
-            HelperFunction.saveAssistantPicthInSharedPreference(
-                snapshotUserInfo.documents[0].data["pitch"]);
-            HelperFunction.saveAssistantVolumeInSharedPreference(snapshotUserInfo.documents[0].data["volume"]);
-          });
-
-          await databaseMethods
-              .getProfilePhotoByEmail(email: emailController.text)
-              .then((value) {
-            setState(() {
-              imageSnapshot = value;
-              HelperFunction.saveUserProfileImageInSharedPreference(
-                  imageSnapshot.documents[0].data["imageUrl"]);
-            });
-          });
-
+          .then((value) {
+        HelperFunction.getUserAttemptState().then((value) {
           setState(() {
-            isLoading = true;
+            isValidAttempt = value;
           });
+        });
 
+        HelperFunction.getUserEmailCorrectState().then((value) {
+          setState(() {
+            isEmailCorrect = value;
+          });
+        });
+
+        HelperFunction.getUserPasswordCorrectState().then((value) {
+          setState(() {
+            isPasswordCorrect = value;
+          });
+        });
+        if (value != null) {
+          setState(() {
+            isSecondEmailValid = true;
+            isSecondAttemptValid = true;
+            isSecondPassValid = true;
+          });
           HelperFunction.saveUserLoggedInSharedPreference(true);
-          HelperFunction.saveUserEmailCorrectState(true);
-          HelperFunction.saveUserPasswordCorrectState(true);
+          HelperFunction.saveUserEmailInSharedPreference(emailController.text);
+          // databaseMethods
+          //     .getUserByUserEmail(email: emailController.text)
+          //     .then((val) {
+          //   snapshotUserInfo = val;
+          //   HelperFunction.saveUserEmailInSharedPreference(
+          //       emailController.text);
+          //   HelperFunction.saveNameInSharedPreference(
+          //       snapshotUserInfo.documents[0].data["name"]);
+          //   HelperFunction.saveAssistantLangInSharedPreferences(
+          //       snapshotUserInfo.documents[0].data["language"]);
+          //   HelperFunction.saveAssistantPicthInSharedPreference(
+          //       snapshotUserInfo.documents[0].data["pitch"]);
+          //   HelperFunction.saveAssistantVolumeInSharedPreference(
+          //       snapshotUserInfo.documents[0].data["volume"]);
+          // });
+          // databaseMethods
+          //     .getProfilePhotoByEmail(email: emailController.text)
+          //     .then((val) {
+          //   imageSnapshot = val;
+          //   HelperFunction.saveUserProfileImageInSharedPreference(
+          //       imageSnapshot.documents[0].data['imageUrl']);
+          // });
+
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -125,7 +123,7 @@ class _SignInPageState extends State<SignInPage> {
       body: Container(
         alignment: Alignment.bottomCenter,
         color: Colors.black87,
-        padding: EdgeInsets.symmetric(vertical: 32.0),
+        padding: EdgeInsets.symmetric(vertical: 65.0),
         child: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
@@ -173,17 +171,19 @@ class _SignInPageState extends State<SignInPage> {
                         decoration: InputDecoration(
                             hintText: "Password",
                             hintStyle: TextStyle(color: Colors.white),
-                            suffix:GestureDetector(
-                              onTap: (){
+                            suffix: GestureDetector(
+                              onTap: () {
                                 setState(() {
                                   isHidden = !isHidden;
                                 });
                               },
                               child: Icon(
                                 Icons.remove_red_eye,
-                                color: isHidden ? Colors.grey.withOpacity(0.5): Colors.white,
+                                color: isHidden
+                                    ? Colors.grey.withOpacity(0.5)
+                                    : Colors.white,
                               ),
-                            ) ,
+                            ),
                             prefixIcon: Icon(
                               Icons.lock,
                               color: Colors.white,
@@ -216,38 +216,53 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 SizedBox(height: 20.0),
                 GestureDetector(
-                  onTap: () async {
-                    await signIn();
-                    final validCredentialsSnackBar = SnackBar(
-                      content: Text('Signing In'),
+                  onTap: () {
+                    final initialSnackBar = SnackBar(
+                      content: Text("Loading .. please wait"),
+                      duration: Duration(seconds: 1),
+                    );
+                    signInScaffoldKey.currentState
+                        .showSnackBar(initialSnackBar);
+                    userSignIn();
+
+                    final loginSnackBar = SnackBar(
+                      content: Text('Signing in'),
                       duration: Duration(seconds: 3),
                     );
-                    final validAttempSnackBar = SnackBar(
-                      content: Text('Please try after some time'),
-                      duration: Duration(seconds: 5),
+
+                    final passwordSnackBar = SnackBar(
+                      content: Text('Please enter a correct password'),
+                      duration: Duration(seconds: 3),
                     );
                     final emailSnackBar = SnackBar(
-                      content: Text('Please enter correct email'),
-                      duration: Duration(seconds: 5),
+                      content: Text('Please check your credentials'),
+                      duration: Duration(seconds: 3),
                     );
-                    final passwordSnackBar = SnackBar(
-                      content:Text("Please enter a correct password"),
-                      duration: Duration(seconds: 5),
+                    final validAttemptSnackBar = SnackBar(
+                      content: Text('Please try after some time'),
+                      duration: Duration(seconds: 3),
                     );
-                    final mixedSnackBar = SnackBar(
-                      content: Text("Check Your Login Details"),
-                      duration: Duration(seconds: 5),
-                    );
-                    if(isValidAttempt == true && isPasswordCorrect == true && isEmailCorrect == true){
-                      signInScaffoldKey.currentState.showSnackBar(validCredentialsSnackBar);
-                    } else if(isValidAttempt == false){
-                      signInScaffoldKey.currentState.showSnackBar(validAttempSnackBar);
-                    } else if(isPasswordCorrect == false && isEmailCorrect == false){
-                      signInScaffoldKey.currentState.showSnackBar(mixedSnackBar);
-                    }else if(isEmailCorrect == false){
-                      signInScaffoldKey.currentState.showSnackBar(emailSnackBar);
-                    }else if(isPasswordCorrect == false){
-                      signInScaffoldKey.currentState.showSnackBar(passwordSnackBar);
+
+                    if (isValidAttempt == true &&
+                        isEmailCorrect == true &&
+                        isPasswordCorrect == true &&
+                        isSecondEmailValid == true &&
+                        isSecondAttemptValid == true &&
+                        isSecondPassValid == true) {
+                      signInScaffoldKey.currentState
+                          .showSnackBar(loginSnackBar);
+                    } else if (isPasswordCorrect == false &&
+                        isSecondPassValid == false) {
+                      signInScaffoldKey.currentState
+                          .showSnackBar(passwordSnackBar);
+                    } else if (isEmailCorrect == false &&
+                        isSecondEmailValid == false) {
+                      signInScaffoldKey.currentState
+                          .showSnackBar(emailSnackBar);
+                    } else if (isValidAttempt == false &&
+                        isSecondAttemptValid == false) {
+                      signInScaffoldKey.currentState
+                          .showSnackBar(validAttemptSnackBar);
                     }
                   },
                   child: Container(

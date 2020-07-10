@@ -45,6 +45,18 @@ class DatabaseMethods {
     });
   }
 
+  addSpecialNotes({String notesRoomId, notesMap, String title}) {
+    Firestore.instance
+        .collection("SpecialNotes")
+        .document(notesRoomId)
+        .collection("notes")
+        .document(title)
+        .setData(notesMap)
+        .catchError((e) {
+      print(e.toString());
+    });
+  }
+
   getNotes({String notesRoomId}) async {
     return await Firestore.instance
         .collection("Notes")
@@ -64,27 +76,54 @@ class DatabaseMethods {
 
   getSpecialNotes({String notesRoomId}) async {
     return await Firestore.instance
-        .collection("Notes")
+        .collection("SpecialNotes")
         .document(notesRoomId)
         .collection("notes")
-        .where("category", isEqualTo: "special_notes")
         .orderBy("time", descending: false)
         .snapshots();
   }
 
   getSpecialNotesLength({String notesRoomId}) async {
     return await Firestore.instance
+        .collection("SpecialNotes")
+        .document(notesRoomId)
+        .collection("notes")
+        .getDocuments();
+  }
+
+  updateNotes({String notesRoomId, String documentTitle, updateMap}) async {
+    await Firestore.instance
         .collection("Notes")
         .document(notesRoomId)
         .collection("notes")
-        .where("category", isEqualTo: "special_notes")
-        .getDocuments();
+        .document(documentTitle)
+        .updateData(updateMap);
+  }
+
+  updateSpecialNotes(
+      {String notesRoomId, String documentTitle, updateMap}) async {
+    await Firestore.instance
+        .collection("SpecialNotes")
+        .document(notesRoomId)
+        .collection("notes")
+        .document(documentTitle)
+        .updateData(updateMap);
   }
 
   addImportantTag(
       {String notesRoomId, String documentTitle, importantMap}) async {
-    Firestore.instance
+    await Firestore.instance
         .collection("Notes")
+        .document(notesRoomId)
+        .collection("notes")
+        .document(documentTitle)
+        .updateData(importantMap);
+  }
+
+  addSpecialImportantTag(
+      {String notesRoomId, String documentTitle, importantMap}) async {
+    await Firestore.instance
+        .collection("SpecialNotes")
         .document(notesRoomId)
         .collection("notes")
         .document(documentTitle)
@@ -101,9 +140,29 @@ class DatabaseMethods {
         .snapshots();
   }
 
+  getSpecialImportantNotes({String notesRoomId}) async {
+    return await Firestore.instance
+        .collection("SpecialNotes")
+        .document(notesRoomId)
+        .collection("notes")
+        .where("important", isEqualTo: "true")
+        .orderBy("time", descending: false)
+        .snapshots();
+  }
+
   createNoteRoom({String notesRoomId, notesMap}) {
     Firestore.instance
         .collection("Notes")
+        .document(notesRoomId)
+        .setData(notesMap)
+        .catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  createSpecialNotesRoom({String notesRoomId, notesMap}) async {
+    Firestore.instance
+        .collection("SpecialNotes")
         .document(notesRoomId)
         .setData(notesMap)
         .catchError((e) {
@@ -137,6 +196,15 @@ class DatabaseMethods {
         .delete();
   }
 
+  deletSpecialNotes({String notesRoomId, String documentId}) async {
+    await Firestore.instance
+        .collection("SpecialNotes")
+        .document(notesRoomId)
+        .collection("notes")
+        .document(documentId)
+        .delete();
+  }
+
   createDeletedNotesRoom({String deletedRoomId, deletedNotesMap}) {
     Firestore.instance
         .collection("DeletedNotes")
@@ -147,9 +215,32 @@ class DatabaseMethods {
     });
   }
 
+  createSpecialNotesDeleteRoom({String deleteRoomId, deletedNotesMap}) async {
+    await Firestore.instance
+        .collection("SpecialDeletedNotes")
+        .document(deleteRoomId)
+        .setData(deletedNotesMap)
+        .catchError((e) {
+      print(e.toString());
+    });
+  }
+
   addDeletedNotes({String deletedRoomId, deletedNotesMap, String title}) {
     Firestore.instance
         .collection("DeletedNotes")
+        .document(deletedRoomId)
+        .collection("Deleted Notes")
+        .document(title)
+        .setData(deletedNotesMap)
+        .catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  addSpecialDeletedNotes(
+      {String deletedRoomId, deletedNotesMap, String title}) async {
+    await Firestore.instance
+        .collection("SpecialDeletedNotes")
         .document(deletedRoomId)
         .collection("Deleted Notes")
         .document(title)

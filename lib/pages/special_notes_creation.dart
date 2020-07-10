@@ -3,16 +3,18 @@ import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/services/database.dart';
 
-class SpecialNotesEditingPage extends StatefulWidget {
+class SpecialNotesCreationPage extends StatefulWidget {
   String description;
   String category;
-  SpecialNotesEditingPage({Key key,this.description,this.category}) : super(key: key);
+  SpecialNotesCreationPage({Key key, this.description, this.category})
+      : super(key: key);
 
   @override
-  _SpecialNotesEditingPageState createState() => _SpecialNotesEditingPageState();
+  _SpecialNotesCreationPageState createState() =>
+      _SpecialNotesCreationPageState();
 }
 
-class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
+class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
@@ -20,28 +22,28 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
   String noteTitle = "";
   var _value;
 
-
-  createNotes(){
-    if(titleController.text.isNotEmpty && descController.text.isNotEmpty){
+  createNotes() {
+    if (titleController.text.isNotEmpty && descController.text.isNotEmpty) {
       Map<String, dynamic> notesMap = {
-        "title":titleController.text,
-        "description":descController.text,
-        "time":DateTime.now().millisecondsSinceEpoch,
-        "category":_value,
-        "important":"false"
+        "title": titleController.text,
+        "description": descController.text,
+        "time": DateTime.now().millisecondsSinceEpoch,
+        "category": _value,
+        "important": "false"
       };
 
-      databaseMethods.addNotes(notesMap:notesMap, notesRoomId: email, title: titleController.text);
+      databaseMethods.addSpecialNotes(
+          notesMap: notesMap, notesRoomId: email, title: titleController.text);
     }
   }
 
   @override
-  void initState() { 
-    HelperFunction.getUserEmailFromSharedPreference().then((value){
+  void initState() {
+    HelperFunction.getUserEmailFromSharedPreference().then((value) {
       setState(() {
         email = value;
       });
-    } );
+    });
     _value = widget.category;
     super.initState();
   }
@@ -64,9 +66,8 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                 Container(
                   height: screenHeight * 0.08,
                   width: screenWidth,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).backgroundColor
-                  ),
+                  decoration:
+                      BoxDecoration(color: Theme.of(context).backgroundColor),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 16.0),
@@ -74,27 +75,27 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          titleController.text != "" ? noteTitle:"New Note",
+                          titleController.text != "" ? noteTitle : "New Note",
                           style: TextStyle(
                               color: Theme.of(context).indicatorColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 22.0),
                         ),
                         GestureDetector(
-                          onTap:(){
-                            print("Save Button Pressed");
-                            createNotes();
-                             Navigator.push(context, MaterialPageRoute(builder: (_)=> NotesDisplayPage(
-                               title: titleController.text,
-                               description: descController.text,
-                               category: _value,
-                             )));
-                          },
-                          child:Icon(
-                            Icons.save,
-                            color:Theme.of(context).indicatorColor
-                          )
-                        )
+                            onTap: () {
+                              print("Save Button Pressed");
+                              createNotes();
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => NotesDisplayPage(
+                                            title: titleController.text,
+                                            description: descController.text,
+                                            category: _value,
+                                          )));
+                            },
+                            child: Icon(Icons.save,
+                                color: Theme.of(context).indicatorColor))
                       ],
                     ),
                   ),
@@ -103,7 +104,7 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                   padding: const EdgeInsets.symmetric(
                       vertical: 8.0, horizontal: 16.0),
                   child: Container(
-                    color:Theme.of(context).backgroundColor,
+                    color: Theme.of(context).backgroundColor,
                     height: 50.0,
                     width: screenWidth * 0.40,
                     child: dropDownButton(),
@@ -115,13 +116,13 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                   child: Column(
                     children: [
                       TextField(
-                        textCapitalization: TextCapitalization.sentences,
+                        textCapitalization: TextCapitalization.words,
                         style: TextStyle(
                             color: Theme.of(context).indicatorColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 18.0),
                         controller: titleController,
-                        onChanged: (string){
+                        onChanged: (string) {
                           setState(() {
                             noteTitle = string;
                           });
@@ -129,7 +130,10 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                         decoration: InputDecoration(
                             hintText: "Enter Title",
                             hintStyle: TextStyle(
-                                color: Theme.of(context).indicatorColor.withOpacity(0.5), fontSize: 18.0),
+                                color: Theme.of(context)
+                                    .indicatorColor
+                                    .withOpacity(0.5),
+                                fontSize: 18.0),
                             border: InputBorder.none),
                       ),
                       SizedBox(
@@ -137,15 +141,19 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                       ),
                       TextField(
                         decoration: InputDecoration(
-                          hintText:'Enter Description',
-                          hintStyle: TextStyle(
-                            color:Theme.of(context).indicatorColor.withOpacity(0.5),
-                            fontSize: 16.0
-                          ),
-                          border: InputBorder.none
-                        ),
+                            hintText: 'Enter Description',
+                            hintStyle: TextStyle(
+                                color: Theme.of(context)
+                                    .indicatorColor
+                                    .withOpacity(0.5),
+                                fontSize: 16.0),
+                            border: InputBorder.none),
                         controller: descController,
-                        style: TextStyle(color: Theme.of(context).indicatorColor.withOpacity(0.9), fontSize: 16.0),
+                        style: TextStyle(
+                            color: Theme.of(context)
+                                .indicatorColor
+                                .withOpacity(0.9),
+                            fontSize: 16.0),
                         keyboardType: TextInputType.multiline,
                         maxLines: null,
                       )
@@ -159,28 +167,32 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
       ),
     );
   }
+
   Widget dropDownButton() {
     return DropdownButton(
       items: [
-        DropdownMenuItem(
-            child: Text(
-              "Normal",
-              style:
-                  TextStyle(color: Theme.of(context).indicatorColor, fontWeight: FontWeight.bold),
-            ),
-            value: "normal"),
-        DropdownMenuItem(
-            child: Text(
-              "Work",
-              style:
-                  TextStyle(color: Theme.of(context).indicatorColor, fontWeight: FontWeight.bold),
-            ),
-            value: "work"),
+        // DropdownMenuItem(
+        //     child: Text(
+        //       "Normal",
+        //       style: TextStyle(
+        //           color: Theme.of(context).indicatorColor,
+        //           fontWeight: FontWeight.bold),
+        //     ),
+        //     value: "normal"),
+        // DropdownMenuItem(
+        //     child: Text(
+        //       "Work",
+        //       style: TextStyle(
+        //           color: Theme.of(context).indicatorColor,
+        //           fontWeight: FontWeight.bold),
+        //     ),
+        //     value: "work"),
         DropdownMenuItem(
             child: Text(
               "Special Notes",
-              style:
-                  TextStyle(color: Theme.of(context).indicatorColor, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Theme.of(context).indicatorColor,
+                  fontWeight: FontWeight.bold),
             ),
             value: "special_notes"),
       ],
@@ -199,5 +211,4 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
       dropdownColor: Theme.of(context).backgroundColor,
     );
   }
-
 }

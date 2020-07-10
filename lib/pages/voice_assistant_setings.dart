@@ -90,7 +90,7 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
                         'Customize Your Assistant',
                         style: TextStyle(
                           color:
-                              Theme.of(context).indicatorColor.withOpacity(0.5),
+                              Theme.of(context).primaryColor.withOpacity(0.8),
                           fontSize: screenWidth * 0.045,
                         ),
                       ),

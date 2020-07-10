@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/helper/authenticate.dart';
 import 'package:notes_app/helper/dark_theme_shared_preference.dart';
@@ -10,10 +13,16 @@ import 'helper/dark_theme_values.dart';
 import 'pages/homepage.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   Crashlytics.instance.enableInDevMode = true;
+  Admob.initialize(getAppId());
 
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
   runApp(MyApp());
+}
+
+String getAppId() {
+  return "ca-app-pub-1942646706163703~3847821147";
 }
 
 class MyApp extends StatefulWidget {
@@ -36,7 +45,7 @@ class _MyAppState extends State<MyApp> {
     getOnBoardState();
   }
 
-  getOnBoardState(){
+  getOnBoardState() {
     HelperFunction.getOnBoardPageViewInSharedPreference().then((value) {
       setState(() {
         isViewed = value;
@@ -71,9 +80,11 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             theme: Styles.themeData(themeChangeProvider.darkTheme, context),
 //           darkTheme: ThemeData.dark(),
-            home: isViewed == null || isViewed == false ? OnBoardScreen() : isLoggedIn != null
-                ? isLoggedIn ? HomePage() : Authenticate()
-                : Authenticate(),
+            home: isViewed == null || isViewed == false
+                ? OnBoardScreen()
+                : isLoggedIn != null
+                    ? isLoggedIn ? HomePage() : Authenticate()
+                    : Authenticate(),
 //             home: isLoggedIn != null
 //                ? isLoggedIn ? HomePage() : Authenticate()
 //                : Authenticate(),

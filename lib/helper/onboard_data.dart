@@ -51,13 +51,20 @@ List<OnBoardModel> getSlides(){
 
   onBoardModel.setImagePath('assets/onboardscreen/dark_mode.png');
   onBoardModel.setTitle('Dark Mode');
-  onBoardModel.setDesc('Use app without any strains with the help of in build dark mode');
+  onBoardModel.setDesc('Use app without any strains with the help of built-in dark mode');
   slides.add(onBoardModel);
   onBoardModel = new OnBoardModel();
 
   onBoardModel.setImagePath('assets/onboardscreen/new_notes.png');
   onBoardModel.setTitle('Easy Customization');
   onBoardModel.setDesc('Easily customise your notes with features like edit and delete');
+  slides.add(onBoardModel);
+
+  onBoardModel = new OnBoardModel();
+
+  onBoardModel.setImagePath('assets/onboardscreen/voice_assistant.png');
+  onBoardModel.setTitle('Voice Assistant');
+  onBoardModel.setDesc('Go through you notes quickly with the help of your built-in voice assistant.\nDouble tap on any notes to make ur voice assistant read out the notes');
   slides.add(onBoardModel);
 
 
