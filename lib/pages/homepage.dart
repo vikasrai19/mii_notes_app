@@ -718,7 +718,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
                   child: AdmobBanner(
-                      adUnitId: getBannerAdUnitId(),
+                      adUnitId: "ca-app-pub-1942646706163703/7765302270",
                       adSize: AdmobBannerSize.BANNER),
                 ),
                 categoryIndex == 1
