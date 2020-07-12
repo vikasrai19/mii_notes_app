@@ -3,12 +3,13 @@ import 'dart:math';
 
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:native_flutter_admob/native_flutter_admob.dart';
 import 'package:notes_app/helper/ad_manager.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
@@ -67,13 +68,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   );
 
   BannerAd bannerAd;
-  final _nativeAdmob = NativeAdmob(
-    adUnitID: getBannerAdUnitId(),
-  );
 
   BannerAd createBannerAd() {
     return BannerAd(
-//        adUnitId: BannerAd.testAdUnitId,
         adUnitId: AdManager.bannerAdUnitId,
         size: AdSize.banner,
         targetingInfo: targetingInfo,
@@ -126,6 +123,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     title = "Add note heading";
     categoryIndex = widget.index == null ? 1 : widget.index;
     isImportant = true;
+//    _nativeAdmob.initialize(appID: AdManager.appId);
     FirebaseAdMob.instance.initialize(appId: AdManager.appId);
     bannerAd = createBannerAd()
       ..load()
@@ -297,7 +295,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             imageSnapshot = value;
             HelperFunction.saveUserProfileImageInSharedPreference(
                 imageSnapshot.documents[0].data['imageUrl']);
-            // imageUrl = imageSnapshot.documents[0].data['imageUrl'];
+            imageUrl = imageSnapshot.documents[0].data['imageUrl'];
           });
         });
       } else {
@@ -428,89 +426,194 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       )));
                         }
                       },
-                      child: ListTile(
-                        onLongPress: () {
-                          setState(() {
-                            if (snapshot
-                                    .data.documents[index].data["important"] ==
-                                "false") {
-                              isImportant = true;
-                              Toast.show('Marked As Important', context,
-                                  duration: Toast.LENGTH_SHORT,
-                                  gravity: Toast.BOTTOM);
-                            } else {
-                              isImportant = false;
-                              Toast.show('Marked As UnImportant', context,
-                                  duration: Toast.LENGTH_SHORT,
-                                  gravity: Toast.BOTTOM);
-                            }
-                          });
-                          if (isImportant) {
-                            Map<String, dynamic> importantMap = {
-                              "important": "true"
-                            };
-                            databaseMethods.addImportantTag(
-                                notesRoomId: email,
-                                documentTitle: snapshot
-                                    .data.documents[index].data["title"],
-                                importantMap: importantMap);
-                          } else {
-                            Map<String, dynamic> importantMap = {
-                              "important": "false"
-                            };
-                            databaseMethods.addImportantTag(
-                                notesRoomId: email,
-                                documentTitle: snapshot
-                                    .data.documents[index].data["title"],
-                                importantMap: importantMap);
-                          }
-                        },
-                        enabled: true,
-                        trailing: isImportant != null && isImportant
-                            ? Icon(MdiIcons.star,
-                                color: Theme.of(context).primaryColor)
-                            : Icon(MdiIcons.star,
-                                color: Theme.of(context)
-                                    .backgroundColor
-                                    .withOpacity(0.5)),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => NotesDisplayPage(
-                                        title: snapshot.data.documents[index]
-                                            .data["title"],
-                                        description: snapshot
-                                            .data
-                                            .documents[index]
-                                            .data["description"],
-                                        category: snapshot.data.documents[index]
-                                            .data["category"],
-                                      )));
-                        },
-                        title: Text(
-                          snapshot.data.documents[index].data["title"]
-                              .toString(),
-                          style: TextStyle(
-                            color: Theme.of(context).indicatorColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                        subtitle: Text(
-                          snapshot.data.documents[index].data["description"]
-                              .toString(),
-                          style: TextStyle(
-                              color: Theme.of(context)
-                                  .indicatorColor
-                                  .withOpacity(0.6),
-                              fontSize: 16.0),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                      child: index != 0 &&
+                              index % 3 == 0 &&
+                              index != snapshot.data.documents.length - 1
+                          ? Column(
+                              children: [
+                                ListTile(
+                                  onLongPress: () {
+                                    setState(() {
+                                      if (snapshot.data.documents[index]
+                                              .data["important"] ==
+                                          "false") {
+                                        isImportant = true;
+                                        Toast.show(
+                                            'Marked As Important', context,
+                                            duration: Toast.LENGTH_SHORT,
+                                            gravity: Toast.BOTTOM);
+                                      } else {
+                                        isImportant = false;
+                                        Toast.show(
+                                            'Marked As UnImportant', context,
+                                            duration: Toast.LENGTH_SHORT,
+                                            gravity: Toast.BOTTOM);
+                                      }
+                                    });
+                                    if (isImportant) {
+                                      Map<String, dynamic> importantMap = {
+                                        "important": "true"
+                                      };
+                                      databaseMethods.addImportantTag(
+                                          notesRoomId: email,
+                                          documentTitle: snapshot.data
+                                              .documents[index].data["title"],
+                                          importantMap: importantMap);
+                                    } else {
+                                      Map<String, dynamic> importantMap = {
+                                        "important": "false"
+                                      };
+                                      databaseMethods.addImportantTag(
+                                          notesRoomId: email,
+                                          documentTitle: snapshot.data
+                                              .documents[index].data["title"],
+                                          importantMap: importantMap);
+                                    }
+                                  },
+                                  enabled: true,
+                                  trailing: isImportant != null && isImportant
+                                      ? Icon(MdiIcons.star,
+                                          color: Theme.of(context).primaryColor)
+                                      : Icon(MdiIcons.star,
+                                          color: Theme.of(context)
+                                              .backgroundColor
+                                              .withOpacity(0.5)),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => NotesDisplayPage(
+                                                  title: snapshot
+                                                      .data
+                                                      .documents[index]
+                                                      .data["title"],
+                                                  description: snapshot
+                                                      .data
+                                                      .documents[index]
+                                                      .data["description"],
+                                                  category: snapshot
+                                                      .data
+                                                      .documents[index]
+                                                      .data["category"],
+                                                )));
+                                  },
+                                  title: Text(
+                                    snapshot.data.documents[index].data["title"]
+                                        .toString(),
+                                    style: TextStyle(
+                                      color: Theme.of(context).indicatorColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                  subtitle: Text(
+                                    snapshot.data.documents[index]
+                                        .data["description"]
+                                        .toString(),
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .indicatorColor
+                                            .withOpacity(0.6),
+                                        fontSize: 16.0),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                AdmobBanner(
+                                    adUnitId: getBannerAdUnitId(),
+                                    adSize: AdmobBannerSize.BANNER),
+                              ],
+                            )
+                          : ListTile(
+                              onLongPress: () {
+                                setState(() {
+                                  if (snapshot.data.documents[index]
+                                          .data["important"] ==
+                                      "false") {
+                                    isImportant = true;
+                                    Toast.show('Marked As Important', context,
+                                        duration: Toast.LENGTH_SHORT,
+                                        gravity: Toast.BOTTOM);
+                                  } else {
+                                    isImportant = false;
+                                    Toast.show('Marked As UnImportant', context,
+                                        duration: Toast.LENGTH_SHORT,
+                                        gravity: Toast.BOTTOM);
+                                  }
+                                });
+                                if (isImportant) {
+                                  Map<String, dynamic> importantMap = {
+                                    "important": "true"
+                                  };
+                                  databaseMethods.addImportantTag(
+                                      notesRoomId: email,
+                                      documentTitle: snapshot
+                                          .data.documents[index].data["title"],
+                                      importantMap: importantMap);
+                                } else {
+                                  Map<String, dynamic> importantMap = {
+                                    "important": "false"
+                                  };
+                                  databaseMethods.addImportantTag(
+                                      notesRoomId: email,
+                                      documentTitle: snapshot
+                                          .data.documents[index].data["title"],
+                                      importantMap: importantMap);
+                                }
+                              },
+                              enabled: true,
+                              trailing: isImportant != null && isImportant
+                                  ? Icon(MdiIcons.star,
+                                      color: Theme.of(context).primaryColor)
+                                  : Icon(MdiIcons.star,
+                                      color: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5)),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => NotesDisplayPage(
+                                              title: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["title"],
+                                              description: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["description"],
+                                              category: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["category"],
+                                            )));
+                              },
+                              title: Text(
+                                snapshot.data.documents[index].data["title"]
+                                    .toString(),
+                                style: TextStyle(
+                                  color: Theme.of(context).indicatorColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              subtitle: Text(
+                                snapshot
+                                    .data.documents[index].data["description"]
+                                    .toString(),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .indicatorColor
+                                        .withOpacity(0.6),
+                                    fontSize: 16.0),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                     );
                   })
               : Container(
@@ -622,27 +725,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         },
                         child: Row(
                           children: [
-                            Container(
-                              height: 60.0,
-                              width: 60.0,
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).indicatorColor,
-                                  shape: BoxShape.circle),
-                              child: imageUrl == null
-                                  ? Container(
-                                      child: Center(
-                                          child: Icon(
-                                        Icons.person,
-                                        size: 35,
-                                      )),
-                                    )
-                                  : ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(30)),
-                                      child: Image.network(
-                                        imageUrl,
-                                        fit: BoxFit.cover,
-                                      )),
+                            Hero(
+                              tag: '$imageUrl',
+                              child: Container(
+                                height: 60.0,
+                                width: 60.0,
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context).indicatorColor,
+                                    shape: BoxShape.circle),
+                                child: imageUrl == null
+                                    ? Container(
+                                        child: Center(
+                                            child: Icon(
+                                          Icons.person,
+                                          size: 35,
+                                        )),
+                                      )
+                                    : ClipRRect(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30)),
+                                        child: Image.network(
+                                          imageUrl,
+                                          fit: BoxFit.cover,
+                                        )),
+                              ),
                             ),
                             SizedBox(
                               width: 20.0,
@@ -659,11 +765,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ),
                       ),
                       GestureDetector(
-                        child: Icon(
-                          Icons.settings,
-                          color: Theme.of(context).indicatorColor,
-                        ),
+                        child: Container(
+                            padding: EdgeInsets.all(8.0),
+                            child: CustomSettingButton(
+                                color: Theme.of(context).indicatorColor)),
                         onTap: () {
+                          print("tapped");
                           Navigator.push(
                               context,
                               CupertinoPageRoute(
@@ -714,19 +821,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
-                  child: AdmobBanner(
-                      adUnitId: "ca-app-pub-1942646706163703/7765302270",
-                      adSize: AdmobBannerSize.BANNER),
-                ),
-                categoryIndex == 1
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TabBarV(),
-                          GestureDetector(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TabBarV(),
+                    categoryIndex == 1
+                        ? GestureDetector(
                             onTap: () {
                               createNotesRoom();
                               Navigator.push(
@@ -736,7 +836,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(0.9),
                                 shape: BoxShape.circle,
                               ),
                               padding: EdgeInsets.all(10.0),
@@ -745,20 +847,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   color: Colors.white, size: 30),
                             ),
                           )
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TabBarV(),
-                          GestureDetector(
+                        : GestureDetector(
                             onTap: () {
                               createSpecialNotesRoom();
                               PickImage();
                             },
                             child: Container(
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.9),
                                   shape: BoxShape.circle,
                                 ),
                                 padding: EdgeInsets.all(10.0),
@@ -766,12 +864,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 child: Icon(Icons.add,
                                     color: Colors.white, size: 30)),
                           )
-                        ],
-                      ),
+                  ],
+                ),
                 Expanded(child: TabBarViewWidget())
-                // categoryIndex == 1
-                //     ? Expanded(child: TabBarViewWidget())
-                //     : Expanded(child: SpecialTabBarViewWidget()),
               ],
             )),
       ),
@@ -857,42 +952,104 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ? ListView.builder(
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    enabled: true,
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => SpecialNotesDisplayPage(
-                                    title: snapshot
-                                        .data.documents[index].data["title"],
-                                    description: snapshot.data.documents[index]
-                                        .data["description"],
-                                    category: snapshot
-                                        .data.documents[index].data["category"],
-                                  )));
-                    },
-                    title: Text(
-                      snapshot.data.documents[index].data["title"].toString(),
-                      style: TextStyle(
-                        color: Theme.of(context).indicatorColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    subtitle: Text(
-                      snapshot.data.documents[index].data["description"]
-                          .toString(),
-                      style: TextStyle(
-                          color:
-                              Theme.of(context).indicatorColor.withOpacity(0.7),
-                          fontSize: 16.0),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
+                  return index != 0 &&
+                          index % 3 == 0 &&
+                          index != snapshot.data.documents.length - 1
+                      ? Column(
+                          children: [
+                            ListTile(
+                              enabled: true,
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => SpecialNotesDisplayPage(
+                                              title: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["title"],
+                                              description: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["description"],
+                                              category: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["category"],
+                                            )));
+                              },
+                              title: Text(
+                                snapshot.data.documents[index].data["title"]
+                                    .toString(),
+                                style: TextStyle(
+                                  color: Theme.of(context).indicatorColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              subtitle: Text(
+                                snapshot
+                                    .data.documents[index].data["description"]
+                                    .toString(),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .indicatorColor
+                                        .withOpacity(0.7),
+                                    fontSize: 16.0),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            AdmobBanner(
+                              adUnitId: getBannerAdUnitId(),
+                              adSize: AdmobBannerSize.BANNER,
+                            )
+                          ],
+                        )
+                      : ListTile(
+                          enabled: true,
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => SpecialNotesDisplayPage(
+                                          title: snapshot.data.documents[index]
+                                              .data["title"],
+                                          description: snapshot
+                                              .data
+                                              .documents[index]
+                                              .data["description"],
+                                          category: snapshot
+                                              .data
+                                              .documents[index]
+                                              .data["category"],
+                                        )));
+                          },
+                          title: Text(
+                            snapshot.data.documents[index].data["title"]
+                                .toString(),
+                            style: TextStyle(
+                              color: Theme.of(context).indicatorColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          subtitle: Text(
+                            snapshot.data.documents[index].data["description"]
+                                .toString(),
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .indicatorColor
+                                    .withOpacity(0.7),
+                                fontSize: 16.0),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
                 })
             : Container(
                 child: Center(
@@ -912,42 +1069,103 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ? ListView.builder(
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    enabled: true,
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => NotesDisplayPage(
-                                    title: snapshot
-                                        .data.documents[index].data["title"],
-                                    description: snapshot.data.documents[index]
-                                        .data["description"],
-                                    category: snapshot
-                                        .data.documents[index].data["category"],
-                                  )));
-                    },
-                    title: Text(
-                      snapshot.data.documents[index].data["title"].toString(),
-                      style: TextStyle(
-                        color: Theme.of(context).indicatorColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    subtitle: Text(
-                      snapshot.data.documents[index].data["description"]
-                          .toString(),
-                      style: TextStyle(
-                          color:
-                              Theme.of(context).indicatorColor.withOpacity(0.7),
-                          fontSize: 16.0),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
+                  return index != 0 &&
+                          index % 3 == 0 &&
+                          index != snapshot.data.documents.length - 1
+                      ? Column(
+                          children: [
+                            ListTile(
+                              enabled: true,
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => NotesDisplayPage(
+                                              title: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["title"],
+                                              description: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["description"],
+                                              category: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["category"],
+                                            )));
+                              },
+                              title: Text(
+                                snapshot.data.documents[index].data["title"]
+                                    .toString(),
+                                style: TextStyle(
+                                  color: Theme.of(context).indicatorColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              subtitle: Text(
+                                snapshot
+                                    .data.documents[index].data["description"]
+                                    .toString(),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .indicatorColor
+                                        .withOpacity(0.7),
+                                    fontSize: 16.0),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            AdmobBanner(
+                                adUnitId: getBannerAdUnitId(),
+                                adSize: AdmobBannerSize.BANNER)
+                          ],
+                        )
+                      : ListTile(
+                          enabled: true,
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => NotesDisplayPage(
+                                          title: snapshot.data.documents[index]
+                                              .data["title"],
+                                          description: snapshot
+                                              .data
+                                              .documents[index]
+                                              .data["description"],
+                                          category: snapshot
+                                              .data
+                                              .documents[index]
+                                              .data["category"],
+                                        )));
+                          },
+                          title: Text(
+                            snapshot.data.documents[index].data["title"]
+                                .toString(),
+                            style: TextStyle(
+                              color: Theme.of(context).indicatorColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          subtitle: Text(
+                            snapshot.data.documents[index].data["description"]
+                                .toString(),
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .indicatorColor
+                                    .withOpacity(0.7),
+                                fontSize: 16.0),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
                 })
             : Container(
                 child: Center(
@@ -1045,89 +1263,195 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       )));
                         }
                       },
-                      child: ListTile(
-                        trailing: isImportant != null && isImportant
-                            ? Icon(MdiIcons.star,
-                                color: Theme.of(context).primaryColor)
-                            : Icon(MdiIcons.star,
-                                color: Theme.of(context)
-                                    .backgroundColor
-                                    .withOpacity(0.5)),
-                        onLongPress: () {
-                          setState(() {
-                            if (snapshot
-                                    .data.documents[index].data["important"] ==
-                                "false") {
-                              isImportant = true;
-                              Toast.show('Marked As Important', context,
-                                  duration: Toast.LENGTH_SHORT,
-                                  gravity: Toast.BOTTOM);
-                            } else {
-                              isImportant = false;
-                              Toast.show('Marked As UnImportant', context,
-                                  duration: Toast.LENGTH_SHORT,
-                                  gravity: Toast.BOTTOM);
-                            }
-                          });
-                          if (isImportant) {
-                            Map<String, dynamic> importantMap = {
-                              "important": "true"
-                            };
-                            databaseMethods.addSpecialImportantTag(
-                                notesRoomId: email,
-                                documentTitle: snapshot
-                                    .data.documents[index].data["title"],
-                                importantMap: importantMap);
-                          } else {
-                            Map<String, dynamic> importantMap = {
-                              "important": "false"
-                            };
-                            databaseMethods.addSpecialImportantTag(
-                                notesRoomId: email,
-                                documentTitle: snapshot
-                                    .data.documents[index].data["title"],
-                                importantMap: importantMap);
-                          }
-                        },
-                        enabled: true,
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => SpecialNotesDisplayPage(
-                                        title: snapshot.data.documents[index]
-                                            .data["title"],
-                                        description: snapshot
-                                            .data
-                                            .documents[index]
-                                            .data["description"],
-                                        category: snapshot.data.documents[index]
-                                            .data["category"],
-                                      )));
-                        },
-                        title: Text(
-                          snapshot.data.documents[index].data["title"]
-                              .toString(),
-                          style: TextStyle(
-                            color: Theme.of(context).indicatorColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                        subtitle: Text(
-                          snapshot.data.documents[index].data["description"]
-                              .toString(),
-                          style: TextStyle(
-                              color: Theme.of(context)
-                                  .indicatorColor
-                                  .withOpacity(0.7),
-                              fontSize: 16.0),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                      child: index != 0 &&
+                              index % 3 == 0 &&
+                              index != snapshot.data.documents.length
+                          ? Column(
+                              children: [
+                                ListTile(
+                                  trailing: isImportant != null && isImportant
+                                      ? Icon(MdiIcons.star,
+                                          color: Theme.of(context).primaryColor)
+                                      : Icon(MdiIcons.star,
+                                          color: Theme.of(context)
+                                              .backgroundColor
+                                              .withOpacity(0.5)),
+                                  onLongPress: () {
+                                    setState(() {
+                                      if (snapshot.data.documents[index]
+                                              .data["important"] ==
+                                          "false") {
+                                        isImportant = true;
+                                        Toast.show(
+                                            'Marked As Important', context,
+                                            duration: Toast.LENGTH_SHORT,
+                                            gravity: Toast.BOTTOM);
+                                      } else {
+                                        isImportant = false;
+                                        Toast.show(
+                                            'Marked As UnImportant', context,
+                                            duration: Toast.LENGTH_SHORT,
+                                            gravity: Toast.BOTTOM);
+                                      }
+                                    });
+                                    if (isImportant) {
+                                      Map<String, dynamic> importantMap = {
+                                        "important": "true"
+                                      };
+                                      databaseMethods.addSpecialImportantTag(
+                                          notesRoomId: email,
+                                          documentTitle: snapshot.data
+                                              .documents[index].data["title"],
+                                          importantMap: importantMap);
+                                    } else {
+                                      Map<String, dynamic> importantMap = {
+                                        "important": "false"
+                                      };
+                                      databaseMethods.addSpecialImportantTag(
+                                          notesRoomId: email,
+                                          documentTitle: snapshot.data
+                                              .documents[index].data["title"],
+                                          importantMap: importantMap);
+                                    }
+                                  },
+                                  enabled: true,
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                SpecialNotesDisplayPage(
+                                                  title: snapshot
+                                                      .data
+                                                      .documents[index]
+                                                      .data["title"],
+                                                  description: snapshot
+                                                      .data
+                                                      .documents[index]
+                                                      .data["description"],
+                                                  category: snapshot
+                                                      .data
+                                                      .documents[index]
+                                                      .data["category"],
+                                                )));
+                                  },
+                                  title: Text(
+                                    snapshot.data.documents[index].data["title"]
+                                        .toString(),
+                                    style: TextStyle(
+                                      color: Theme.of(context).indicatorColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                  subtitle: Text(
+                                    snapshot.data.documents[index]
+                                        .data["description"]
+                                        .toString(),
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .indicatorColor
+                                            .withOpacity(0.7),
+                                        fontSize: 16.0),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                AdmobBanner(
+                                    adUnitId: getBannerAdUnitId(),
+                                    adSize: AdmobBannerSize.BANNER)
+                              ],
+                            )
+                          : ListTile(
+                              trailing: isImportant != null && isImportant
+                                  ? Icon(MdiIcons.star,
+                                      color: Theme.of(context).primaryColor)
+                                  : Icon(MdiIcons.star,
+                                      color: Theme.of(context)
+                                          .backgroundColor
+                                          .withOpacity(0.5)),
+                              onLongPress: () {
+                                setState(() {
+                                  if (snapshot.data.documents[index]
+                                          .data["important"] ==
+                                      "false") {
+                                    isImportant = true;
+                                    Toast.show('Marked As Important', context,
+                                        duration: Toast.LENGTH_SHORT,
+                                        gravity: Toast.BOTTOM);
+                                  } else {
+                                    isImportant = false;
+                                    Toast.show('Marked As UnImportant', context,
+                                        duration: Toast.LENGTH_SHORT,
+                                        gravity: Toast.BOTTOM);
+                                  }
+                                });
+                                if (isImportant) {
+                                  Map<String, dynamic> importantMap = {
+                                    "important": "true"
+                                  };
+                                  databaseMethods.addSpecialImportantTag(
+                                      notesRoomId: email,
+                                      documentTitle: snapshot
+                                          .data.documents[index].data["title"],
+                                      importantMap: importantMap);
+                                } else {
+                                  Map<String, dynamic> importantMap = {
+                                    "important": "false"
+                                  };
+                                  databaseMethods.addSpecialImportantTag(
+                                      notesRoomId: email,
+                                      documentTitle: snapshot
+                                          .data.documents[index].data["title"],
+                                      importantMap: importantMap);
+                                }
+                              },
+                              enabled: true,
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => SpecialNotesDisplayPage(
+                                              title: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["title"],
+                                              description: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["description"],
+                                              category: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["category"],
+                                            )));
+                              },
+                              title: Text(
+                                snapshot.data.documents[index].data["title"]
+                                    .toString(),
+                                style: TextStyle(
+                                  color: Theme.of(context).indicatorColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              subtitle: Text(
+                                snapshot
+                                    .data.documents[index].data["description"]
+                                    .toString(),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .indicatorColor
+                                        .withOpacity(0.7),
+                                    fontSize: 16.0),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                     );
                   })
               : Container(
@@ -1167,14 +1491,16 @@ class NotesPageCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: categoryIndex == index
-                  ? [Color(0xff5E0035), Color(0xffE22386)]
+                  ? [Color(0xff1f5cfc), Colors.blue]
+//                  ? [Color(0xff5E0035), Color(0xffE22386)]
                   : [Color(0xFFF5F7FB), Color(0xFFF5F7FB)]),
           boxShadow: [
             categoryIndex == index
                 ? BoxShadow(
-                    color: Colors.black26,
-                    offset: Offset(0, 2),
-                    blurRadius: 10.0)
+                    color: Theme.of(context).primaryColor.withOpacity(0.5),
+                    offset: Offset(2, 2),
+                    blurRadius: 10.0,
+                    spreadRadius: 2.0)
                 : BoxShadow(color: Colors.transparent),
           ],
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
@@ -1206,6 +1532,29 @@ class NotesPageCard extends StatelessWidget {
               )
             ]),
       ),
+    );
+  }
+}
+
+class CustomSettingButton extends StatelessWidget {
+  Color color;
+
+  CustomSettingButton({this.color = Colors.black});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          height: 3,
+          width: 30,
+          color: color,
+        ),
+        SizedBox(height: 5),
+        Container(height: 3, width: 20, color: color)
+      ],
     );
   }
 }

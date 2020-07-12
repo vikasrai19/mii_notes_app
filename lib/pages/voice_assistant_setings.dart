@@ -62,7 +62,7 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
                       Text(
                         'Assistant Settings',
                         style: TextStyle(
-                            color: Theme.of(context).primaryColor,
+                            color: Theme.of(context).indicatorColor,
                             fontSize: screenWidth * 0.07,
                             fontWeight: FontWeight.bold),
                       ),
@@ -70,7 +70,7 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
                         height: 4.0,
                       ),
                       Container(
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).indicatorColor,
                         height: 2,
                         width: screenWidth * 0.6,
                       ),

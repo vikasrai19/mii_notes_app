@@ -74,12 +74,59 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          titleController.text != "" ? noteTitle : "New Note",
-                          style: TextStyle(
-                              color: Theme.of(context).indicatorColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22.0),
+                        Container(
+                          height: 50.0,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 0.0),
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.5),
+                                  offset: Offset(2, 2),
+                                  blurRadius: 2.0,
+                                  spreadRadius: 1.0)
+                            ],
+                            borderRadius: BorderRadius.circular(25.0),
+                            gradient: LinearGradient(
+                                colors: [Color(0xff1f5cfc), Colors.blue],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight),
+                          ),
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                onTap:(){
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                    height:50,
+                                    width:50,
+                                    decoration:BoxDecoration(
+                                        color:Colors.white,
+                                        shape:BoxShape.circle
+                                    ),
+                                    child:Icon(
+                                        Icons.arrow_back,
+                                        color:Theme.of(context).primaryColor
+                                    )
+                                ),
+                              ),
+                              Container(
+                                constraints: BoxConstraints(maxWidth: screenWidth * 0.65),
+                                padding: const EdgeInsets.symmetric(vertical:6.0, horizontal:12.0),
+                                child: Text(
+                                  titleController.text != "" ? noteTitle : "New Note",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 22.0),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         GestureDetector(
                             onTap: () {
@@ -95,7 +142,7 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
                                           )));
                             },
                             child: Icon(Icons.save,
-                                color: Theme.of(context).indicatorColor))
+                                color: Colors.white))
                       ],
                     ),
                   ),

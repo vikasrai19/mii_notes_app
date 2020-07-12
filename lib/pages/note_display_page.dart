@@ -1,11 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/notes_editing_page.dart';
 import 'package:share/share.dart';
 
 import 'homepage.dart';
+
+bool isClicked;
 
 class NotesDisplayPage extends StatefulWidget {
   final String title;
@@ -26,8 +29,19 @@ class _NotesDisplayPageState extends State<NotesDisplayPage> {
   double pitch;
   double volume;
 
+  double _width = 50;
+  double _height = 50;
+  double _width2 = 50;
+  double _height2 = 50;
+  double _rightPosition = 20;
+  double _bottomPosition = 65;
+  BorderRadius _borderRadius = BorderRadius.circular(25);
+  BorderRadius _borderRadius2 = BorderRadius.circular(20);
+  EdgeInsets _margin = EdgeInsets.all(0);
+
   @override
   void initState() {
+    isClicked = false;
     HelperFunction.getUserEmailFromSharedPreference().then((value) {
       setState(() {
         email = value;
@@ -52,10 +66,18 @@ class _NotesDisplayPageState extends State<NotesDisplayPage> {
     super.initState();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
+    @override
+    void dispose() {
+      // TODO: implement dispose
+      super.dispose();
+    }
+
 
     speak({String text}) async {
       await flutterTts.setVolume(volume);
@@ -85,60 +107,130 @@ class _NotesDisplayPageState extends State<NotesDisplayPage> {
       Share.share(shareString, subject: title);
     }
 
+
     return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
       body: Container(
-        color: Theme.of(context).backgroundColor,
         height: screenHeight,
         width: screenWidth,
-        child: SafeArea(
-            child: SingleChildScrollView(
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Stack(
+          children: [
+            SafeArea(
+                child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 16.0,right:16, bottom:55, top:16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      child: Text(
-                        widget.category,
-                        style: TextStyle(
-                            color: Theme.of(context).indicatorColor,
-                            fontSize: 16.0),
-                      ),
-                    ),
                     Row(
+                      mainAxisAlignment:MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            shareNotes(
-                                title: widget.title, desc: widget.description);
-                          },
-                          child: Icon(Icons.share,
-                              color: Theme.of(context).indicatorColor),
+                        Container(
+                          height:40.0,
+                          padding:EdgeInsets.symmetric(vertical: 4.0, horizontal: 0.0),
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.5),
+                                  offset: Offset(2, 2),
+                                  blurRadius: 20.0,
+                                  spreadRadius: 1.0)
+                            ],
+                            borderRadius: BorderRadius.circular(20.0),
+                            gradient: LinearGradient(
+                                colors:[Color(0xff1f5cfc), Colors.blue],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight),
+                          ),
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height:40,
+                                  width:40,
+                                  decoration: BoxDecoration(
+                                    shape:BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Theme.of(context)
+                                              .primaryColor
+                                              .withOpacity(0.5),
+                                          offset: Offset(2, 2),
+                                          blurRadius: 8.0,
+                                          spreadRadius: 2.0)
+                                    ],
+                                    gradient: LinearGradient(
+//                                        colors:[Color(0xff1f5cfc), Colors.blue],
+                                    colors:[Colors.white,Colors.white],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight),
+                                  ),
+                                  child: Icon(
+                                      Icons.arrow_back,
+                                      color:Theme.of(context).primaryColor.withOpacity(0.9)
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(vertical: 4.0, horizontal:12.0 ),
+
+                                child: Text(
+                                  widget.category,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18.0),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(width: 25.0),
                         GestureDetector(
-                          onTap: () {
-                            stop();
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (_) => HomePage()));
+                          onTap: (){
+                            if(isPlaying){
+                              setState(() {
+                                isPlaying = false;
+                              });
+                              stop();
+                            }
+//                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder:(_)=>HomePage(index: 1)),(route)=>false);
                           },
-                          child: Icon(Icons.done,
-                              color: Theme.of(context).indicatorColor),
+                          child: Container(
+                            height:40,
+                            width:40,
+                            decoration: BoxDecoration(
+                              shape:BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.5),
+                                    offset: Offset(2, 2),
+                                    blurRadius: 8.0,
+                                    spreadRadius: 2.0)
+                              ],
+                              gradient: LinearGradient(
+                                  colors:[Color(0xff1f5cfc), Colors.blue],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight),
+                            ),
+                            child: Icon(
+                              Icons.done,
+                              color:Colors.white
+                            ),
+                          ),
                         ),
                       ],
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 30.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                    ),
+                    SizedBox(
+                      height: 30.0,
+                    ),
                     Container(
                       width: screenWidth * 0.50,
                       child: AutoSizeText(
@@ -153,59 +245,172 @@ class _NotesDisplayPageState extends State<NotesDisplayPage> {
                             fontWeight: FontWeight.bold),
                       ),
                     ),
+                    SizedBox(height: 30.0),
                     GestureDetector(
-                      onTap:(){
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => NotesEditingPage(
-                                  title: widget.title,
-                                  description: widget.description,
-                                  category: widget.category,
-                                )));
+                      onDoubleTap: () {
+                        setState(() {
+                          isPlaying = !isPlaying;
+                        });
+                        if (isPlaying) {
+                          speak(text: widget.description);
+                        } else {
+                          stop();
+                        }
                       },
                       child: Container(
-                        width: 50.0,
-                        height:50.0,
-                        decoration: BoxDecoration(
-                          color:Theme.of(context).primaryColor,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.edit,
-                          color:Colors.white
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          widget.description,
+                          style: TextStyle(
+                              color: Theme.of(context).indicatorColor,
+                              fontSize: 18.0,
+                              wordSpacing: 5.0),
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
-                SizedBox(height: 30.0),
-                GestureDetector(
-                  onDoubleTap: () {
-                    setState(() {
-                      isPlaying = !isPlaying;
-                    });
-                    if (isPlaying) {
-                      speak(text: widget.description);
-                    } else {
-                      stop();
-                    }
-                  },
-                  child: Container(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      widget.description,
-                      style: TextStyle(
-                          color: Theme.of(context).indicatorColor,
-                          fontSize: 18.0,
-                          wordSpacing: 5.0),
-                    ),
-                  ),
-                )
+              ),
+            )),
+            Stack(
+              children: [
+                Positioned(
+                    right: 20,
+                    bottom: 65,
+                    child: AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        width: _width,
+                        height: _height,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(0.5),
+                                offset: Offset(2, 2),
+                                blurRadius: 10.0,
+                                spreadRadius: 2.0)
+                          ],
+                          gradient: LinearGradient(
+                              colors: [Color(0xff1f5cfc), Colors.blue],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight),
+                          borderRadius: _borderRadius,
+                        ),
+                        child: isClicked
+                            ? Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    NotesEditingPage(
+                                                      title: widget.title,
+                                                      category: widget.category,
+                                                      description:
+                                                          widget.description,
+                                                    )));
+                                      },
+                                      child: Icon(
+                                        Icons.brush,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(width: 15),
+                                    FaIcon(FontAwesomeIcons.whatsapp,
+                                        color: Colors.white),
+                                    SizedBox(width: 15),
+                                    GestureDetector(
+                                      onTap: () {
+                                        shareNotes(title: widget.title, desc: widget.description);
+                                      },
+                                      child: Icon(
+                                        Icons.share,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Container())),
+                AnimatedPositioned(
+                    duration: Duration(milliseconds: 100),
+                    bottom: _bottomPosition,
+                    right: _rightPosition,
+                    child: AnimatedContainer(
+//                        alignment: isClicked
+//                            ? Alignment.centerRight
+//                            : Alignment.centerRight,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(horizontal: 12.0),
+                        duration: Duration(milliseconds: 100),
+                        height: _height2,
+                        width: _width2,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              colors: isClicked
+                                  ? [Colors.white, Colors.white]
+                                  : [Color(0xff1f5cfc), Colors.blue],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight),
+                          borderRadius: _borderRadius,
+                        ),
+                        child: isClicked
+                            ? GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _width = 50;
+                                    _height2 = 50;
+                                    _width2 = 50;
+                                    _rightPosition = 20;
+                                    _bottomPosition = 65;
+                                    _borderRadius = BorderRadius.circular(25);
+                                  });
+
+                                  Future.delayed(Duration(milliseconds: 75),
+                                      () {
+                                    setState(() {
+                                      isClicked = false;
+                                    });
+                                  });
+                                },
+                                child: Icon(Icons.close,
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.9),
+                                    size: 18
+//                                  color:Theme.of(context).primaryColor
+                                    ))
+                            : GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _width2 = 40;
+                                    _height2 = 40;
+                                    _width = 175;
+                                    _rightPosition = 25;
+                                    _bottomPosition = 70;
+                                    _borderRadius2 = BorderRadius.circular(20);
+                                  });
+                                  Future.delayed(Duration(milliseconds: 250),
+                                      () {
+                                    setState(() {
+                                      isClicked = true;
+                                    });
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                              ))),
               ],
             ),
-          ),
-        )),
+          ],
+        ),
       ),
     );
   }

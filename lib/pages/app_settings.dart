@@ -118,7 +118,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                           Text(
                             "App Settings",
                             style: TextStyle(
-                                color: Theme.of(context).primaryColor,
+                                color: Theme.of(context).indicatorColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: screenWidth * 0.07),
                           ),

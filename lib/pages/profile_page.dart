@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:notes_app/helper/ad_manager.dart';
 import 'package:notes_app/helper/authenticate.dart';
 import 'package:notes_app/helper/dark_theme_shared_preference.dart';
 import 'package:notes_app/helper/helper_functions.dart';
@@ -34,6 +36,24 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    testDevices: testDevice != null ? <String>[testDevice] : null,
+    nonPersonalizedAds: true,
+    keywords: <String>['Game', 'Apps', 'App Development'],
+  );
+
+  BannerAd bannerAd;
+
+  BannerAd createBannerAd() {
+    return BannerAd(
+        adUnitId: AdManager.bannerAdUnitId,
+        size: AdSize.banner,
+        targetingInfo: targetingInfo,
+        listener: (MobileAdEvent event) {
+          print("Banner $event");
+        });
+  }
+
   String imageUrl;
   String email;
   bool switchControl;
@@ -43,6 +63,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
+    FirebaseAdMob.instance.initialize(appId: AdManager.appId);
+    bannerAd = createBannerAd()
+      ..load()
+      ..show();
     darkThemePreference.getTheme().then((value) {
       setState(() {
         switchControl = value;
@@ -113,16 +137,77 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (_) => HomePage()));
-                      },
-                      child: Icon(Icons.arrow_back_ios,
-                          color: Theme.of(context).indicatorColor)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 4.0),
+                  child: Container(
+                    height: 40.0,
+                    width: 175,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 4.0, horizontal: 0.0),
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.5),
+                            offset: Offset(2, 2),
+                            blurRadius: 20.0,
+                            spreadRadius: 1.0)
+                      ],
+                      borderRadius: BorderRadius.circular(20.0),
+                      gradient: LinearGradient(
+                          colors: [Color(0xff1f5cfc), Colors.blue],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.5),
+                                  offset: Offset(2, 2),
+                                  blurRadius: 8.0,
+                                  spreadRadius: 2.0)
+                            ],
+                            gradient: LinearGradient(
+//                                        colors:[Color(0xff1f5cfc), Colors.blue],
+                                colors: [Colors.white, Colors.white],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight),
+                          ),
+                          // padding: EdgeInsets.symmetric(
+                          //     vertical: 8.0, horizontal: 16.0),
+                          child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => HomePage()),
+                                    (route) => false);
+                              },
+                              child: Icon(Icons.arrow_back,
+                                  color: Theme.of(context).primaryColor)),
+                        ),
+                        Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 4.0, horizontal: 12.0),
+                            child: Text(
+                              'Profile Page',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold),
+                            )),
+                      ],
+                    ),
+                  ),
                 ),
                 SizedBox(height: screenHeight * 0.08),
                 GestureDetector(
@@ -138,29 +223,32 @@ class _ProfilePageState extends State<ProfilePage> {
                                   specialNotesLength: widget.specialNotesLength,
                                 )));
                   },
-                  child: Container(
-                    alignment: Alignment.center,
+                  child: Hero(
+                    tag: '$imageUrl',
                     child: Container(
-                      height: 150.0,
-                      width: 150.0,
-                      child: imageUrl != null
-                          ? ClipRRect(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(75.0)),
-                              child: Image.network(
-                                imageUrl,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Container(
-                              child: Center(
-                              child: Icon(Icons.person,
-                                  color: Theme.of(context)
-                                      .indicatorColor
-                                      .withOpacity(0.4)),
-                            )),
-                      decoration: BoxDecoration(
-                          color: Colors.black26, shape: BoxShape.circle),
+                      alignment: Alignment.center,
+                      child: Container(
+                        height: 150.0,
+                        width: 150.0,
+                        child: imageUrl != null
+                            ? ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(75.0)),
+                                child: Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Container(
+                                child: Center(
+                                child: Icon(Icons.person,
+                                    color: Theme.of(context)
+                                        .indicatorColor
+                                        .withOpacity(0.4)),
+                              )),
+                        decoration: BoxDecoration(
+                            color: Colors.black26, shape: BoxShape.circle),
+                      ),
                     ),
                   ),
                 ),
@@ -278,10 +366,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xff5E0035),
-                                    Color(0xffE22386)
-                                  ]),
+                                  colors: [Color(0xff1f5cfc), Colors.blue]),
                               boxShadow: [
                                 BoxShadow(
                                     color: Colors.black26,
@@ -347,7 +432,7 @@ class ProfileNotesPageCard extends StatelessWidget {
           gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xff5E0035), Color(0xffE22386)]),
+              colors: [Color(0xff1f5cfc), Colors.blue]),
           boxShadow: [
             categoryIndex == index
                 ? BoxShadow(
@@ -402,9 +487,9 @@ class SettingsWidget extends StatelessWidget {
       width: screenWidth * 0.42,
       decoration: BoxDecoration(
           gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xff5E0035), Color(0xffE22386)]),
+              begin: Alignment.topLeft, end: Alignment.bottomRight,
+//              colors: [Color(0xff5E0035), Color(0xffE22386)]
+              colors: [Color(0xff1f5cfc), Colors.blue]),
           boxShadow: [
             BoxShadow(
                 color: Colors.black26, offset: Offset(0, 2), blurRadius: 10.0),

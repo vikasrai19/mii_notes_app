@@ -121,7 +121,7 @@ class _SignUpPageState extends State<SignUpPage> {
         // margin: EdgeInsets.only(bottom: 65),
         alignment: Alignment.bottomCenter,
         color: Colors.black87,
-        padding: EdgeInsets.symmetric(vertical: 65.0),
+        padding: EdgeInsets.symmetric(vertical: 30.0),
         child: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
@@ -244,7 +244,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            colors: [Color(0xff5E0035), Color(0xffE22386)]),
+                            colors: [Color(0xff1f5cfc), Colors.blue]),
                         borderRadius: BorderRadius.circular(50.0)),
                     child: Text(
                       "Sign Up",

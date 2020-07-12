@@ -7,6 +7,7 @@ class NotesEditingPage extends StatefulWidget {
   String title;
   String description;
   String category;
+
   NotesEditingPage({Key key, this.title, this.description, this.category})
       : super(key: key);
 
@@ -79,18 +80,60 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          titleController.text != "" ? noteTitle : "New Note",
-                          style: TextStyle(
-                              color: Theme.of(context).indicatorColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22.0),
+                        Container(
+                          height: 50.0,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 0.0),
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.5),
+                                  offset: Offset(2, 2),
+                                  blurRadius: 2.0,
+                                  spreadRadius: 1.0)
+                            ],
+                            borderRadius: BorderRadius.circular(25.0),
+                            gradient: LinearGradient(
+                                colors: [Color(0xff1f5cfc), Colors.blue],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle),
+                                child: Icon(Icons.arrow_back,
+                                    color: Theme.of(context).primaryColor),
+                              ),
+                              Container(
+                                constraints: BoxConstraints(maxWidth: screenWidth * 0.60),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 12.0),
+                                child: Text(
+                                  titleController.text != ""
+                                      ? noteTitle
+                                      : "New Note",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         GestureDetector(
                             onTap: () {
                               print("Save Button Pressed");
                               createNotes();
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (_) => NotesDisplayPage(
@@ -99,8 +142,30 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                                             category: _value,
                                           )));
                             },
-                            child: Icon(Icons.save,
-                                color: Theme.of(context).indicatorColor))
+                            child: Container(
+                              height: 40.0,
+                              width: 40.0,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 4.0, horizontal: 0.0),
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Theme.of(context)
+                                          .primaryColor
+                                          .withOpacity(0.5),
+                                      offset: Offset(2, 2),
+                                      blurRadius: 2.0,
+                                      spreadRadius: 1.0)
+                                ],
+                                borderRadius: BorderRadius.circular(25.0),
+                                gradient: LinearGradient(
+                                    colors: [Color(0xff1f5cfc), Colors.blue],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight),
+                              ),
+                              child: Icon(Icons.save,
+                                  color: Colors.white),
+                            ))
                       ],
                     ),
                   ),
