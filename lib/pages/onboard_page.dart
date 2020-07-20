@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/helper/authenticate.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/helper/onboard_data.dart';
@@ -23,10 +24,10 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
   Widget pageIndexIndicator(bool isCurrentPage) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 2.0),
-      height: isCurrentPage ? 8.0 : 4.0,
-      width: isCurrentPage ? 8.0 : 4.0,
+      height: isCurrentPage ? 6.0 : 4.0,
+      width: isCurrentPage ? 16.0 : 4.0,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.all(Radius.circular(6.0)),
         color: isCurrentPage ? Theme.of(context).primaryColor : Colors.grey,
       ),
     );
@@ -36,6 +37,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView.builder(
+          physics: ClampingScrollPhysics(),
           controller: pageController,
           itemCount: slides.length,
           onPageChanged: (val) {
@@ -62,7 +64,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                     InkWell(
                       child: Text(
                         "Skip",
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
@@ -84,7 +86,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                     InkWell(
                       child: Text(
                         "Next",
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
@@ -112,7 +114,8 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                 color: Theme.of(context).primaryColor,
                 child: Text(
                   "Get Started",
-                  style: TextStyle(color: Colors.white, fontSize: 22.0),
+                  style: GoogleFonts.montserrat(
+                      color: Colors.white, fontSize: 22.0),
                 ),
               ),
             ),
@@ -121,9 +124,9 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
 }
 
 class SliderTile extends StatelessWidget {
-  String imagePath;
-  String title;
-  String desc;
+  final String imagePath;
+  final String title;
+  final String desc;
 
   SliderTile({this.imagePath, this.title, this.desc});
   @override
@@ -141,7 +144,7 @@ class SliderTile extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: GoogleFonts.montserrat(
                   color: Theme.of(context).primaryColor,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
@@ -150,7 +153,7 @@ class SliderTile extends StatelessWidget {
             Text(
               desc,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: GoogleFonts.montserrat(
                 color: Theme.of(context).primaryColor,
                 fontSize: 18,
               ),

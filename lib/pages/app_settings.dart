@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/helper/dark_theme_shared_preference.dart';
-import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/helper/policy_dialog.dart';
 import 'package:notes_app/pages/profile_page.dart';
 import 'package:provider/provider.dart';
@@ -9,11 +9,11 @@ import 'package:rate_my_app/rate_my_app.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppSettingPage extends StatefulWidget {
-  bool isDarkMode;
-  String name;
-  String userEmail;
-  int notesLength;
-  int specialNotesLength;
+  final bool isDarkMode;
+  final String name;
+  final String userEmail;
+  final int notesLength;
+  final int specialNotesLength;
 
   AppSettingPage(
       {this.isDarkMode,
@@ -50,7 +50,10 @@ class _AppSettingPageState extends State<AppSettingPage> {
             actionsBuilder: (context, stars) {
           return [
             FlatButton(
-              child: Text('Ok'),
+              child: Text(
+                'Ok',
+                style: GoogleFonts.montserrat(),
+              ),
               onPressed: () {
                 if (stars != null) {
                   rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
@@ -79,7 +82,6 @@ class _AppSettingPageState extends State<AppSettingPage> {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
-    double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     void toggleSwitch(bool value) {
       if (switchControl == false) {
@@ -117,10 +119,10 @@ class _AppSettingPageState extends State<AppSettingPage> {
                         children: [
                           Text(
                             "App Settings",
-                            style: TextStyle(
+                            style: GoogleFonts.montserrat(
                                 color: Theme.of(context).indicatorColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: screenWidth * 0.07),
+                                fontSize: screenWidth * 0.065),
                           ),
                           SizedBox(
                             height: 4,
@@ -146,7 +148,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                           ),
                           Text(
                             'Customize Your App',
-                            style: TextStyle(
+                            style: GoogleFonts.montserrat(
                                 fontSize: screenWidth * 0.04,
                                 color: Theme.of(context)
                                     .indicatorColor
@@ -188,7 +190,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     children: [
                       Text(
                         'Dark Mode',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontSize: 18.0),
                       ),
@@ -207,7 +209,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     children: [
                       Text(
                         'Rate Us On PlayStore',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontSize: 18.0),
                       ),
@@ -255,7 +257,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     children: [
                       Text(
                         'DM us on Instagram',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontSize: 18.0),
                       ),
@@ -278,7 +280,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     children: [
                       Text(
                         'Follow Us On Facebook',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontSize: 18.0),
                       ),
@@ -300,7 +302,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     children: [
                       Text(
                         'Follow Us On Twitter',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontSize: 18.0),
                       ),
@@ -322,7 +324,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     children: [
                       Text(
                         'Follow Us On Youtube',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontSize: 18.0),
                       ),
@@ -342,7 +344,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     children: [
                       Text(
                         'Privacy Policy',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontSize: 18.0),
                       ),
@@ -374,7 +376,7 @@ class _AppSettingPageState extends State<AppSettingPage> {
                     children: [
                       Text(
                         'Terms And Conditions',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontSize: 18.0),
                       ),
@@ -402,11 +404,12 @@ class _AppSettingPageState extends State<AppSettingPage> {
               ),
               Container(
                 alignment: Alignment.center,
+                margin: EdgeInsets.only(bottom: 55),
                 width: screenWidth,
                 child: Text(
                   "Created by MII Apps",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: GoogleFonts.montserrat(
                       color: Theme.of(context).indicatorColor.withOpacity(0.6),
                       fontSize: screenWidth * 0.03,
                       fontWeight: FontWeight.bold),

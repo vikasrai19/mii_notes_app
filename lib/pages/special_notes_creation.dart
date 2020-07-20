@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/services/database.dart';
 
 class SpecialNotesCreationPage extends StatefulWidget {
-  String description;
-  String category;
+  final String description;
+  final String category;
   SpecialNotesCreationPage({Key key, this.description, this.category})
       : super(key: key);
 
@@ -21,14 +22,22 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
   String email;
   String noteTitle = "";
   var _value;
+  String finalDescription;
 
   createNotes() {
-    if (titleController.text.isNotEmpty && descController.text.isNotEmpty) {
+    if (titleController.text.isNotEmpty) {
+      List<String> searchStringList = List();
+      String temp = "";
+      for (var j = 0; j < titleController.text.length; j++) {
+        temp = temp + titleController.text[j];
+        searchStringList.add(temp);
+      }
       Map<String, dynamic> notesMap = {
         "title": titleController.text,
-        "description": descController.text,
+        "description": finalDescription,
         "time": DateTime.now().millisecondsSinceEpoch,
         "category": _value,
+        "searchTerm": searchStringList,
         "important": "false"
       };
 
@@ -52,7 +61,8 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
-    descController.text = widget.description;
+    // descController.text = widget.description;
+    finalDescription = widget.description;
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
@@ -97,29 +107,29 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
                           child: Row(
                             children: [
                               GestureDetector(
-                                onTap:(){
+                                onTap: () {
                                   Navigator.pop(context);
                                 },
                                 child: Container(
-                                    height:50,
-                                    width:50,
-                                    decoration:BoxDecoration(
-                                        color:Colors.white,
-                                        shape:BoxShape.circle
-                                    ),
-                                    child:Icon(
-                                        Icons.arrow_back,
-                                        color:Theme.of(context).primaryColor
-                                    )
-                                ),
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle),
+                                    child: Icon(Icons.arrow_back,
+                                        color: Theme.of(context).primaryColor)),
                               ),
                               Container(
-                                constraints: BoxConstraints(maxWidth: screenWidth * 0.65),
-                                padding: const EdgeInsets.symmetric(vertical:6.0, horizontal:12.0),
+                                constraints: BoxConstraints(
+                                    maxWidth: screenWidth * 0.60),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0),
                                 child: Text(
-                                  titleController.text != "" ? noteTitle : "New Note",
+                                  titleController.text != ""
+                                      ? noteTitle
+                                      : "New Note",
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: GoogleFonts.grenze(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 22.0),
@@ -137,12 +147,32 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
                                   MaterialPageRoute(
                                       builder: (_) => NotesDisplayPage(
                                             title: titleController.text,
-                                            description: descController.text,
+                                            description: finalDescription,
                                             category: _value,
                                           )));
                             },
-                            child: Icon(Icons.save,
-                                color: Colors.white))
+                            child: Container(
+                                height: 40.0,
+                                width: 40.0,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 4.0, horizontal: 0.0),
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Theme.of(context)
+                                            .primaryColor
+                                            .withOpacity(0.5),
+                                        offset: Offset(2, 2),
+                                        blurRadius: 2.0,
+                                        spreadRadius: 1.0)
+                                  ],
+                                  borderRadius: BorderRadius.circular(25.0),
+                                  gradient: LinearGradient(
+                                      colors: [Color(0xff1f5cfc), Colors.blue],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight),
+                                ),
+                                child: Icon(Icons.save, color: Colors.white)))
                       ],
                     ),
                   ),
@@ -164,7 +194,7 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
                     children: [
                       TextField(
                         textCapitalization: TextCapitalization.words,
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 18.0),
@@ -176,7 +206,7 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
                         },
                         decoration: InputDecoration(
                             hintText: "Enter Title",
-                            hintStyle: TextStyle(
+                            hintStyle: GoogleFonts.montserrat(
                                 color: Theme.of(context)
                                     .indicatorColor
                                     .withOpacity(0.5),
@@ -186,17 +216,22 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
                       SizedBox(
                         height: 10.0,
                       ),
-                      TextField(
+                      TextFormField(
+                        initialValue: widget.description,
+                        onChanged: (string) {
+                          setState(() {
+                            finalDescription = string;
+                          });
+                        },
                         decoration: InputDecoration(
                             hintText: 'Enter Description',
-                            hintStyle: TextStyle(
+                            hintStyle: GoogleFonts.montserrat(
                                 color: Theme.of(context)
                                     .indicatorColor
                                     .withOpacity(0.5),
                                 fontSize: 16.0),
                             border: InputBorder.none),
-                        controller: descController,
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context)
                                 .indicatorColor
                                 .withOpacity(0.9),
@@ -235,12 +270,11 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
         //     ),
         //     value: "work"),
         DropdownMenuItem(
-            child: Text(
-              "Special Notes",
-              style: TextStyle(
+            child: Text("Special Notes",
+                style: GoogleFonts.montserrat(
                   color: Theme.of(context).indicatorColor,
-                  fontWeight: FontWeight.bold),
-            ),
+                  fontWeight: FontWeight.bold,
+                )),
             value: "special_notes"),
       ],
       onChanged: (value) {
@@ -250,10 +284,11 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
         });
       },
       value: _value,
-      style: TextStyle(color: Theme.of(context).indicatorColor, fontSize: 16.0),
+      style: GoogleFonts.montserrat(
+          color: Theme.of(context).indicatorColor, fontSize: 14.0),
       hint: Text(
         "Select category",
-        style: TextStyle(color: Theme.of(context).indicatorColor),
+        style: GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
       ),
       dropdownColor: Theme.of(context).backgroundColor,
     );

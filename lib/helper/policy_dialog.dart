@@ -5,7 +5,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 class PolicyDialog extends StatelessWidget {
   final double radius;
   final String fileName;
-  Function onPressed;
+  final Function onPressed;
   PolicyDialog(
       {Key key,
       this.radius = 8,

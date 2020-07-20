@@ -2,9 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/helper/helper_functions.dart';
-import 'package:notes_app/pages/notes_editing_page.dart';
-import 'package:notes_app/pages/special_notes_creation.dart';
 import 'package:notes_app/pages/special_notes_editing.dart';
 import 'package:share/share.dart';
 
@@ -37,8 +36,6 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
   double _rightPosition = 20;
   double _bottomPosition = 65;
   BorderRadius _borderRadius = BorderRadius.circular(25);
-  BorderRadius _borderRadius2 = BorderRadius.circular(20);
-  EdgeInsets _margin = EdgeInsets.all(0);
   bool isClicked;
 
   @override
@@ -70,7 +67,6 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -103,7 +99,7 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
     }
 
     shareNotes({String title, String desc}) {
-      final shareString = "${title}\n${desc}";
+      final shareString = title + "\n" + desc;
       Share.share(shareString, subject: title);
     }
 
@@ -117,8 +113,8 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
             SafeArea(
                 child: SingleChildScrollView(
               child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 16.0,right:16, bottom:55, top:16),
+                padding: const EdgeInsets.only(
+                    left: 16.0, right: 16, bottom: 55, top: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -126,8 +122,9 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          height:40.0,
-                          padding:EdgeInsets.symmetric(vertical: 4.0, horizontal: 0.0),
+                          height: 40.0,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 0.0),
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
@@ -140,21 +137,21 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
                             ],
                             borderRadius: BorderRadius.circular(20.0),
                             gradient: LinearGradient(
-                                colors:[Color(0xff1f5cfc), Colors.blue],
+                                colors: [Color(0xff1f5cfc), Colors.blue],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight),
                           ),
                           child: Row(
                             children: [
                               GestureDetector(
-                                onTap: (){
+                                onTap: () {
                                   Navigator.pop(context);
                                 },
                                 child: Container(
-                                  height:40,
-                                  width:40,
+                                  height: 40,
+                                  width: 40,
                                   decoration: BoxDecoration(
-                                    shape:BoxShape.circle,
+                                    shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
                                           color: Theme.of(context)
@@ -166,24 +163,22 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
                                     ],
                                     gradient: LinearGradient(
 //                                        colors:[Color(0xff1f5cfc), Colors.blue],
-                                        colors:[Colors.white,Colors.white],
+                                        colors: [Colors.white, Colors.white],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight),
                                   ),
-                                  child: Icon(
-                                      Icons.arrow_back,
-                                      color:Theme.of(context).primaryColor.withOpacity(0.9)
-                                  ),
+                                  child: Icon(Icons.arrow_back,
+                                      color: Theme.of(context)
+                                          .primaryColor
+                                          .withOpacity(0.9)),
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.symmetric(vertical: 4.0, horizontal:12.0 ),
-
+                                padding: EdgeInsets.symmetric(horizontal: 12.0),
                                 child: Text(
                                   widget.category,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18.0),
+                                  style: GoogleFonts.grenze(
+                                      color: Colors.white, fontSize: 18.0),
                                 ),
                               ),
                             ],
@@ -191,14 +186,19 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            if(isPlaying){
+                            if (isPlaying) {
                               setState(() {
                                 isPlaying = false;
                               });
                               stop();
                             }
-                            Navigator.pushAndRemoveUntil(context,
-                                MaterialPageRoute(builder: (_) => HomePage(index: 2,)), (route)=>false);
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => HomePage(
+                                          index: 2,
+                                        )),
+                                (route) => false);
                           },
                           child: Container(
                             height: 40,
@@ -235,7 +235,7 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
                         minFontSize: 18,
                         maxFontSize: 25.0,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontSize: 25.0,
                             fontWeight: FontWeight.bold),
@@ -257,7 +257,7 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
                         alignment: Alignment.topLeft,
                         child: Text(
                           widget.description,
-                          style: TextStyle(
+                          style: GoogleFonts.montserrat(
                               color: Theme.of(context).indicatorColor,
                               fontSize: 18.0,
                               wordSpacing: 5.0),
@@ -391,7 +391,6 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
                                     _width = 175;
                                     _rightPosition = 25;
                                     _bottomPosition = 70;
-                                    _borderRadius2 = BorderRadius.circular(20);
                                   });
                                   Future.delayed(Duration(milliseconds: 250),
                                       () {

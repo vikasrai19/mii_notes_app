@@ -17,8 +17,8 @@ class DatabaseMethods {
 
   getProfilePhotoByEmail({String email}) async {
     return await Firestore.instance
-        .collection("Profiles")
-        .where("email", isEqualTo: email)
+        .collection("Users")
+        .where("userEmail", isEqualTo: email)
         .getDocuments();
   }
 
@@ -45,6 +45,46 @@ class DatabaseMethods {
     });
   }
 
+  searchNotes({String notesRoomId, String value}) async {
+    return await Firestore.instance
+        .collection("Notes")
+        .document(notesRoomId)
+        .collection("notes")
+        .where("searchTerm", arrayContains: value)
+        .snapshots();
+  }
+
+  createFriendsRoom({String roomId, roomDataMap}) async {
+    Firestore.instance
+        .collection("Friends")
+        .document(roomId)
+        .setData(roomDataMap)
+        .catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  addFriends({String roomId, friendData}) async {
+    Firestore.instance
+        .collection("Friends")
+        .document(roomId)
+        .updateData(friendData);
+  }
+
+  getFirendList({String roomId}) async {
+    return Firestore.instance
+        .collection("Friends")
+        .where("email", isEqualTo: roomId)
+        .getDocuments();
+  }
+
+  findFriends({String value, String name}) async {
+    return await Firestore.instance
+        .collection("Users")
+        .where("searchTerm", arrayContains: value)
+        .snapshots();
+  }
+
   addSpecialNotes({String notesRoomId, notesMap, String title}) {
     Firestore.instance
         .collection("SpecialNotes")
@@ -57,8 +97,17 @@ class DatabaseMethods {
     });
   }
 
+  searchSpecialNotes({String notesRoomId, String searchTerm}) {
+    return Firestore.instance
+        .collection("SpecialNotes")
+        .document(notesRoomId)
+        .collection("notes")
+        .where("searchTerm", arrayContains: searchTerm)
+        .snapshots();
+  }
+
   getNotes({String notesRoomId}) async {
-    return await Firestore.instance
+    return Firestore.instance
         .collection("Notes")
         .document(notesRoomId)
         .collection("notes")
@@ -75,7 +124,7 @@ class DatabaseMethods {
   }
 
   getSpecialNotes({String notesRoomId}) async {
-    return await Firestore.instance
+    return Firestore.instance
         .collection("SpecialNotes")
         .document(notesRoomId)
         .collection("notes")
@@ -131,7 +180,7 @@ class DatabaseMethods {
   }
 
   getImportantNotes({String notesRoomId}) async {
-    return await Firestore.instance
+    return Firestore.instance
         .collection("Notes")
         .document(notesRoomId)
         .collection("notes")
@@ -141,7 +190,7 @@ class DatabaseMethods {
   }
 
   getSpecialImportantNotes({String notesRoomId}) async {
-    return await Firestore.instance
+    return Firestore.instance
         .collection("SpecialNotes")
         .document(notesRoomId)
         .collection("notes")
@@ -170,19 +219,19 @@ class DatabaseMethods {
     });
   }
 
-  createProfileRoom({String profileRoomId, profileRoomMap}) {
-    Firestore.instance
-        .collection("Profiles")
-        .document(profileRoomId)
-        .setData(profileRoomMap)
-        .catchError((e) {
-      print(e.toString());
-    });
-  }
+  // createProfileRoom({String profileRoomId, profileRoomMap}) {
+  //   Firestore.instance
+  //       .collection("Profiles")
+  //       .document(profileRoomId)
+  //       .setData(profileRoomMap)
+  //       .catchError((e) {
+  //     print(e.toString());
+  //   });
+  // }
 
   updateProfileRoom({String profileRoomId, profileRoomMap}) {
     Firestore.instance
-        .collection("Profiles")
+        .collection("Users")
         .document(profileRoomId)
         .updateData(profileRoomMap);
   }

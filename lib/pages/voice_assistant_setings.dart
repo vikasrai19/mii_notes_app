@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/services/database.dart';
 
@@ -43,7 +44,6 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
@@ -61,9 +61,9 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
                     children: [
                       Text(
                         'Assistant Settings',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
-                            fontSize: screenWidth * 0.07,
+                            fontSize: screenWidth * 0.065,
                             fontWeight: FontWeight.bold),
                       ),
                       SizedBox(
@@ -88,7 +88,7 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
                       ),
                       Text(
                         'Customize Your Assistant',
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                           color:
                               Theme.of(context).primaryColor.withOpacity(0.8),
                           fontSize: screenWidth * 0.045,
@@ -116,7 +116,7 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
                 children: [
                   Text(
                     "Assistant Language",
-                    style: TextStyle(
+                    style: GoogleFonts.montserrat(
                         color: Theme.of(context).indicatorColor,
                         fontSize: 16.0),
                   ),
@@ -131,7 +131,7 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
                 children: [
                   Text(
                     "Assistant Pitch",
-                    style: TextStyle(
+                    style: GoogleFonts.montserrat(
                         color: Theme.of(context).indicatorColor,
                         fontSize: 16.0),
                   ),
@@ -146,7 +146,7 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
                 children: [
                   Text(
                     "Assistant Volume",
-                    style: TextStyle(
+                    style: GoogleFonts.montserrat(
                         color: Theme.of(context).indicatorColor,
                         fontSize: 16.0),
                   ),
@@ -166,33 +166,37 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
         DropdownMenuItem(
           child: Text(
             '0.5',
-            style: TextStyle(color: Theme.of(context).indicatorColor),
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
           ),
           value: 0.5,
         ),
         DropdownMenuItem(
           child: Text(
             '1.0',
-            style: TextStyle(color: Theme.of(context).indicatorColor),
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
           ),
           value: 1.0,
         ),
         DropdownMenuItem(
           child: Text(
             '1.5',
-            style: TextStyle(color: Theme.of(context).indicatorColor),
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
           ),
           value: 1.5,
         ),
         DropdownMenuItem(
           child: Text(
             '2.0',
-            style: TextStyle(color: Theme.of(context).indicatorColor),
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
           ),
           value: 2.0,
         ),
       ],
-      style: TextStyle(color: Theme.of(context).indicatorColor),
+      style: GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
       onChanged: (_value) {
         setState(() {
           pitch = _value;
@@ -210,30 +214,54 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
   Widget assistantVolumeDropDownMenu() {
     return DropdownButton(
       dropdownColor: Theme.of(context).backgroundColor,
-      style: TextStyle(color: Theme.of(context).indicatorColor),
+      style: GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
       items: [
         DropdownMenuItem(
-          child: Text('0.0'),
+          child: Text(
+            '0.0',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 0.0,
         ),
         DropdownMenuItem(
-          child: Text('0.2'),
+          child: Text(
+            '0.2',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 0.2,
         ),
         DropdownMenuItem(
-          child: Text('0.4'),
+          child: Text(
+            '0.4',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 0.4,
         ),
         DropdownMenuItem(
-          child: Text('0.6'),
+          child: Text(
+            '0.6',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 0.6,
         ),
         DropdownMenuItem(
-          child: Text('0.8'),
+          child: Text(
+            '0.8',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 0.8,
         ),
         DropdownMenuItem(
-          child: Text('1.0'),
+          child: Text(
+            '1.0',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 1.0,
         ),
       ],
@@ -254,28 +282,46 @@ class _VoiceAssistantSettingsState extends State<VoiceAssistantSettings> {
   Widget assistantLangDropDownMenu() {
     return DropdownButton(
       dropdownColor: Theme.of(context).backgroundColor,
-      style: TextStyle(color: Theme.of(context).indicatorColor),
+      style: GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
       items: [
         DropdownMenuItem(
           child: Text(
             'English US',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
           ),
           value: 'en-US',
         ),
         DropdownMenuItem(
-          child: Text('English India'),
+          child: Text(
+            'English India',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 'en-IN',
         ),
         DropdownMenuItem(
-          child: Text('Hindi'),
+          child: Text(
+            'Hindi',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 'hi-IN',
         ),
         DropdownMenuItem(
-          child: Text('Kannada'),
+          child: Text(
+            'Kannada',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 'kn-IN',
         ),
         DropdownMenuItem(
-          child: Text('Gujarathi'),
+          child: Text(
+            'Gujarathi',
+            style:
+                GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
+          ),
           value: 'gu-IN',
         ),
       ],

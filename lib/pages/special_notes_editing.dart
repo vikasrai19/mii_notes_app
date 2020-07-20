@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/special_notes_display.dart';
 import 'package:notes_app/services/database.dart';
 
 class SpecialNotesEditingPage extends StatefulWidget {
-  String title;
-  String description;
-  String category;
+  final String title;
+  final String description;
+  final String category;
   SpecialNotesEditingPage(
       {Key key, this.title, this.description, this.category})
       : super(key: key);
@@ -23,14 +24,22 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
   String email;
   String noteTitle = "";
   var _value;
+  String finalDescription;
 
   createNotes() {
     if (titleController.text.isNotEmpty && descController.text.isNotEmpty) {
+      List<String> searchStringList = List();
+      String temp = "";
+      for (var j = 0; j < titleController.text.length; j++) {
+        temp = temp + titleController.text[j];
+        searchStringList.add(temp);
+      }
       Map<String, dynamic> notesMap = {
         "title": titleController.text,
-        "description": descController.text,
+        "description": finalDescription,
         // "time": DateTime.now().millisecondsSinceEpoch,
         "category": _value,
+        "searchTerm": searchStringList
         // "important": "false"
       };
 
@@ -56,8 +65,8 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
-    widget.title != null ? noteTitle = widget.title : "";
-    descController.text = widget.description;
+    noteTitle = widget.title != null ? widget.title : "";
+    finalDescription = widget.description;
     titleController.text = widget.title != null ? widget.title : "";
 
     return Scaffold(
@@ -103,29 +112,29 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                           child: Row(
                             children: [
                               GestureDetector(
-                                onTap:(){
+                                onTap: () {
                                   Navigator.pop(context);
                                 },
                                 child: Container(
-                                    height:50,
-                                    width:50,
-                                    decoration:BoxDecoration(
-                                        color:Colors.white,
-                                        shape:BoxShape.circle
-                                    ),
-                                    child:Icon(
-                                        Icons.arrow_back,
-                                        color:Theme.of(context).primaryColor
-                                    )
-                                ),
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle),
+                                    child: Icon(Icons.arrow_back,
+                                        color: Theme.of(context).primaryColor)),
                               ),
                               Container(
-                                constraints: BoxConstraints(maxWidth: screenWidth * 0.65),
-                                padding: const EdgeInsets.symmetric(vertical:6.0, horizontal:12.0),
+                                constraints: BoxConstraints(
+                                    maxWidth: screenWidth * 0.65),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0),
                                 child: Text(
-                                  titleController.text != "" ? noteTitle : "New Note",
+                                  titleController.text != ""
+                                      ? noteTitle
+                                      : "New Note",
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: GoogleFonts.grenze(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20.0),
@@ -143,7 +152,7 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                                   MaterialPageRoute(
                                       builder: (_) => SpecialNotesDisplayPage(
                                             title: titleController.text,
-                                            description: descController.text,
+                                            description: finalDescription,
                                             category: _value,
                                           )));
                             },
@@ -168,8 +177,7 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight),
                               ),
-                              child: Icon(Icons.save,
-                                  color: Colors.white),
+                              child: Icon(Icons.save, color: Colors.white),
                             ))
                       ],
                     ),
@@ -192,7 +200,7 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                     children: [
                       TextField(
                         textCapitalization: TextCapitalization.words,
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 18.0),
@@ -204,7 +212,7 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                         },
                         decoration: InputDecoration(
                             hintText: "Enter Title",
-                            hintStyle: TextStyle(
+                            hintStyle: GoogleFonts.montserrat(
                                 color: Theme.of(context)
                                     .indicatorColor
                                     .withOpacity(0.5),
@@ -214,17 +222,22 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                       SizedBox(
                         height: 10.0,
                       ),
-                      TextField(
+                      TextFormField(
+                        initialValue: widget.description,
                         decoration: InputDecoration(
                             hintText: 'Enter Description',
-                            hintStyle: TextStyle(
+                            hintStyle: GoogleFonts.montserrat(
                                 color: Theme.of(context)
                                     .indicatorColor
                                     .withOpacity(0.5),
                                 fontSize: 16.0),
                             border: InputBorder.none),
-                        controller: descController,
-                        style: TextStyle(
+                        onChanged: (string) {
+                          setState(() {
+                            finalDescription = string;
+                          });
+                        },
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context)
                                 .indicatorColor
                                 .withOpacity(0.9),
@@ -265,7 +278,7 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
         DropdownMenuItem(
             child: Text(
               "Special Notes",
-              style: TextStyle(
+              style: GoogleFonts.montserrat(
                   color: Theme.of(context).indicatorColor,
                   fontWeight: FontWeight.bold),
             ),
@@ -278,10 +291,11 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
         });
       },
       value: _value,
-      style: TextStyle(color: Theme.of(context).indicatorColor, fontSize: 16.0),
+      style: GoogleFonts.montserrat(
+          color: Theme.of(context).indicatorColor, fontSize: 14.0),
       hint: Text(
         "Select category",
-        style: TextStyle(color: Theme.of(context).indicatorColor),
+        style: GoogleFonts.montserrat(color: Theme.of(context).indicatorColor),
       ),
       dropdownColor: Theme.of(context).backgroundColor,
     );

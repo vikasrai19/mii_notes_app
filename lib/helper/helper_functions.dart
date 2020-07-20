@@ -1,5 +1,3 @@
-import "dart:io";
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HelperFunction {
@@ -61,7 +59,7 @@ class HelperFunction {
   static Future<bool> saveOnBoardpageViewInSharePreference(
       bool isViewed) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(onBoardPageViewedInSharedPreference, isViewed);
+    return await prefs.setBool(onBoardPageViewedInSharedPreference, isViewed);
   }
 
   static Future<bool> saveAssistantVolumeInSharedPreference(
@@ -104,27 +102,27 @@ class HelperFunction {
 
   static Future<int> getNotesCountFromSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getInt(notesCountInSharedPreference);
+    return prefs.getInt(notesCountInSharedPreference);
   }
 
   static Future<int> getSpecialNotesLengthFromSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getInt(specialNotesCountInSharedPreference);
+    return prefs.getInt(specialNotesCountInSharedPreference);
   }
 
   static Future<bool> getUserAttemptState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool(isUserValidAttempt);
+    return prefs.getBool(isUserValidAttempt);
   }
 
   static Future<bool> getUserEmailCorrectState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool(isEmailCorrect);
+    return prefs.getBool(isEmailCorrect);
   }
 
   static Future<bool> getUserPasswordCorrectState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool(isPasswordCorrect);
+    return prefs.getBool(isPasswordCorrect);
   }
 
   static Future<bool> getIsEmailAlreadyInUse() async {
@@ -134,17 +132,17 @@ class HelperFunction {
 
   static Future<bool> getOnBoardPageViewInSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool(onBoardPageViewedInSharedPreference);
+    return prefs.getBool(onBoardPageViewedInSharedPreference);
   }
 
   static Future<double> getAssistantVolumeInSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getDouble(assistantVolumeInSharedPreferences);
+    return prefs.getDouble(assistantVolumeInSharedPreferences);
   }
 
   static Future<double> getAssistantPitchInSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getDouble(assistantPitchInSharedPreferences);
+    return prefs.getDouble(assistantPitchInSharedPreferences);
   }
 
   static Future<String> getAssistantLangInSharedPreference() async {

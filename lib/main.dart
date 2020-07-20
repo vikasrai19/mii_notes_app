@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/helper/authenticate.dart';
@@ -92,17 +90,5 @@ class _MyAppState extends State<MyApp> {
         },
       ),
     );
-  }
-}
-
-class onBoardScreen extends StatefulWidget {
-  @override
-  _onBoardScreenState createState() => _onBoardScreenState();
-}
-
-class _onBoardScreenState extends State<onBoardScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }

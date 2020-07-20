@@ -1,28 +1,27 @@
 class Constants {
-
-  static String myName ="";
+  static String myName = "";
 }
 
-class popUpConstants {
+class PopUpConstants {
   static const String specialNotes = "Notes From Image";
   static const String normalNotes = "Normal Notes";
   static const String reminder = "Reminder Notes";
 
-  static const List<String> choices = <String> [
+  static const List<String> choices = <String>[
     normalNotes,
     specialNotes,
 //    reminder
   ];
 }
 
-class assistantLanguages {
+class AssistantLanguages {
   static const String englishIndia = "English India";
   static const String hindiInda = "Hindi";
   static const String englishUS = "English US";
   static const String kannadaIndia = "Kannada";
   static const String gujarathiIndia = "Gujarathi";
 
-  static const List<String> voices = <String> [
+  static const List<String> voices = <String>[
     englishIndia,
     hindiInda,
     englishUS,

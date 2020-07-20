@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/services/database.dart';
 
 class NotesEditingPage extends StatefulWidget {
-  String title;
-  String description;
-  String category;
+  final String title;
+  final String description;
+  final String category;
 
   NotesEditingPage({Key key, this.title, this.description, this.category})
       : super(key: key);
@@ -21,15 +22,29 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   String email;
   String noteTitle;
+  String finalDescription;
   var _value;
 
+  @override
+  void dispose() {
+    descController.dispose();
+    super.dispose();
+  }
+
   createNotes() {
-    if (titleController.text.isNotEmpty && descController.text.isNotEmpty) {
+    if (titleController.text.isNotEmpty) {
+      List<String> searchStringList = List();
+      String temp = "";
+      for (var j = 0; j < titleController.text.length; j++) {
+        temp = temp + titleController.text[j];
+        searchStringList.add(temp);
+      }
       Map<String, dynamic> notesMap = {
         "title": titleController.text,
-        "description": descController.text,
+        "description": finalDescription,
         // "time": DateTime.now().millisecondsSinceEpoch,
-        "category": _value
+        "category": _value,
+        "searchTerm": searchStringList
       };
 
       databaseMethods.updateNotes(
@@ -52,11 +67,12 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
 
   @override
   Widget build(BuildContext context) {
-    widget.title != null ? noteTitle = widget.title : "";
+    noteTitle = widget.title != null ? widget.title : " ";
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
     titleController.text = widget.title;
-    descController.text = widget.description;
+    finalDescription = widget.description;
+    // descController.text = widget.description;
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
@@ -102,25 +118,31 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                           ),
                           child: Row(
                             children: [
-                              Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle),
-                                child: Icon(Icons.arrow_back,
-                                    color: Theme.of(context).primaryColor),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle),
+                                  child: Icon(Icons.arrow_back,
+                                      color: Theme.of(context).primaryColor),
+                                ),
                               ),
                               Container(
-                                constraints: BoxConstraints(maxWidth: screenWidth * 0.60),
+                                constraints: BoxConstraints(
+                                    maxWidth: screenWidth * 0.60),
                                 padding: const EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 12.0),
+                                    horizontal: 12.0),
                                 child: Text(
                                   titleController.text != ""
                                       ? noteTitle
                                       : "New Note",
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: GoogleFonts.grenze(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20.0),
@@ -138,7 +160,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                                   MaterialPageRoute(
                                       builder: (_) => NotesDisplayPage(
                                             title: titleController.text,
-                                            description: descController.text,
+                                            description: finalDescription,
                                             category: _value,
                                           )));
                             },
@@ -163,8 +185,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight),
                               ),
-                              child: Icon(Icons.save,
-                                  color: Colors.white),
+                              child: Icon(Icons.save, color: Colors.white),
                             ))
                       ],
                     ),
@@ -187,7 +208,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                     children: [
                       TextField(
                         textCapitalization: TextCapitalization.words,
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 18.0),
@@ -200,7 +221,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                         },
                         decoration: InputDecoration(
                             hintText: "Enter Title",
-                            hintStyle: TextStyle(
+                            hintStyle: GoogleFonts.montserrat(
                                 color: Theme.of(context)
                                     .indicatorColor
                                     .withOpacity(0.5),
@@ -210,18 +231,27 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                       SizedBox(
                         height: 10.0,
                       ),
-                      TextField(
+                      TextFormField(
+                        initialValue: widget.description,
+                        toolbarOptions:
+                            ToolbarOptions(copy: true, cut: true, paste: true),
                         textCapitalization: TextCapitalization.sentences,
+                        onChanged: (string) {
+                          setState(() {
+                            finalDescription = string;
+                          });
+                          print(finalDescription);
+                        },
                         decoration: InputDecoration(
                             hintText: 'Enter Description',
-                            hintStyle: TextStyle(
+                            hintStyle: GoogleFonts.montserrat(
                                 color: Theme.of(context)
                                     .indicatorColor
                                     .withOpacity(0.5),
                                 fontSize: 16.0),
                             border: InputBorder.none),
-                        controller: descController,
-                        style: TextStyle(
+                        // controller: descController,
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context)
                                 .indicatorColor
                                 .withOpacity(0.9),
@@ -246,7 +276,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
         DropdownMenuItem(
             child: Text(
               "Normal",
-              style: TextStyle(
+              style: GoogleFonts.montserrat(
                   color: Theme.of(context).indicatorColor,
                   fontWeight: FontWeight.bold),
             ),
@@ -254,7 +284,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
         DropdownMenuItem(
             child: Text(
               "Work",
-              style: TextStyle(
+              style: GoogleFonts.montserrat(
                   color: Theme.of(context).indicatorColor,
                   fontWeight: FontWeight.bold),
             ),
@@ -262,7 +292,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
         DropdownMenuItem(
             child: Text(
               "Special Notes",
-              style: TextStyle(
+              style: GoogleFonts.montserrat(
                   color: Theme.of(context).indicatorColor,
                   fontWeight: FontWeight.bold),
             ),
@@ -275,14 +305,14 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
         });
       },
       value: _value,
-      style:
-          TextStyle(color: Theme.of(context).backgroundColor, fontSize: 16.0),
+      style: GoogleFonts.montserrat(
+          color: Theme.of(context).backgroundColor, fontSize: 14.0),
       hint: Text(
         "Select category",
-        style:
-            TextStyle(color: Theme.of(context).indicatorColor.withOpacity(0.7)),
+        style: GoogleFonts.montserrat(
+            color: Theme.of(context).indicatorColor.withOpacity(0.7)),
       ),
-      dropdownColor: Theme.of(context).backgroundColor.withOpacity(0.5),
+      dropdownColor: Theme.of(context).backgroundColor,
     );
   }
 }

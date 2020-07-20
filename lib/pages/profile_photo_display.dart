@@ -9,11 +9,11 @@ import 'package:notes_app/pages/profile_page.dart';
 import 'package:notes_app/services/database.dart';
 
 class ProfilePhotoDisplay extends StatefulWidget {
-  String imageUrl;
-  String name;
-  String email;
-  int notesLength;
-  int specialNotesLength;
+  final String imageUrl;
+  final String name;
+  final String email;
+  final int notesLength;
+  final int specialNotesLength;
 
   ProfilePhotoDisplay(
       {this.imageUrl,
@@ -43,8 +43,6 @@ class _ProfilePhotoDisplayState extends State<ProfilePhotoDisplay> {
   double _rightPosition = 20;
   double _topPosition = 18;
   BorderRadius _borderRadius = BorderRadius.circular(25);
-  BorderRadius _borderRadius2 = BorderRadius.circular(20);
-  EdgeInsets _margin = EdgeInsets.all(0);
 
   @override
   void initState() {
@@ -76,7 +74,7 @@ class _ProfilePhotoDisplayState extends State<ProfilePhotoDisplay> {
 
   Future uploadImage({String email}) async {
     StorageReference storageReference =
-        FirebaseStorage.instance.ref().child("${email}/${image.path}");
+        FirebaseStorage.instance.ref().child(email + "/${image.path}");
     StorageUploadTask uploadTask = storageReference.putFile(croppedImage);
     await uploadTask.onComplete;
     print("File successfully uploaded");
@@ -86,10 +84,11 @@ class _ProfilePhotoDisplayState extends State<ProfilePhotoDisplay> {
         HelperFunction.saveUserProfileImageInSharedPreference(uploadFileUrl);
         Map<String, dynamic> profileRoomMap = {
           "imageUrl": uploadFileUrl,
-          "email": widget.email
         };
-        databaseMethods.createProfileRoom(
-            profileRoomId: widget.email, profileRoomMap: profileRoomMap);
+
+        databaseMethods.updateProfileRoom(
+            profileRoomId: email, profileRoomMap: profileRoomMap);
+
         HelperFunction.getUserProfileImageInSharedPreference().then((value) {
           setState(() {
             imageUrl = value;
@@ -164,7 +163,6 @@ class _ProfilePhotoDisplayState extends State<ProfilePhotoDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
@@ -206,35 +204,41 @@ class _ProfilePhotoDisplayState extends State<ProfilePhotoDisplay> {
                                 onTap: () {
                                   Navigator.pop(context);
                                 },
-                                child: Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Theme.of(context)
-                                              .primaryColor
-                                              .withOpacity(0.5),
-                                          offset: Offset(2, 2),
-                                          blurRadius: 8.0,
-                                          spreadRadius: 2.0)
-                                    ],
-                                    gradient: LinearGradient(
+                                child: Hero(
+                                  tag: 'back',
+                                  child: Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Theme.of(context)
+                                                .primaryColor
+                                                .withOpacity(0.5),
+                                            offset: Offset(2, 2),
+                                            blurRadius: 8.0,
+                                            spreadRadius: 2.0)
+                                      ],
+                                      gradient: LinearGradient(
 //                                        colors:[Color(0xff1f5cfc), Colors.blue],
-                                        colors: [Colors.white, Colors.white],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight),
+                                          colors: [Colors.white, Colors.white],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight),
+                                    ),
+                                    child: Icon(Icons.arrow_back,
+                                        color: Theme.of(context)
+                                            .primaryColor
+                                            .withOpacity(0.9)),
                                   ),
-                                  child: Icon(Icons.arrow_back,
-                                      color: Theme.of(context)
-                                          .primaryColor
-                                          .withOpacity(0.9)),
                                 ),
                               ),
                               Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 4.0, horizontal: 12.0),
+                                padding: EdgeInsets.only(
+                                    top: 4.0,
+                                    left: 8.0,
+                                    bottom: 4.0,
+                                    right: 28),
                                 child: Text(
                                   'Profile Image',
                                   style: TextStyle(
@@ -278,9 +282,12 @@ class _ProfilePhotoDisplayState extends State<ProfilePhotoDisplay> {
                       ? Expanded(
                           child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Image.network(
-                            widget.imageUrl,
-                            fit: BoxFit.fitWidth,
+                          child: Hero(
+                            tag: 'imageUrl',
+                            child: Image.network(
+                              widget.imageUrl,
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ))
                       : Container(
@@ -400,8 +407,6 @@ class _ProfilePhotoDisplayState extends State<ProfilePhotoDisplay> {
                                       _width = 125;
                                       _rightPosition = 24;
                                       _topPosition = 23;
-                                      _borderRadius2 =
-                                          BorderRadius.circular(20);
                                     });
                                     Future.delayed(Duration(milliseconds: 250),
                                         () {

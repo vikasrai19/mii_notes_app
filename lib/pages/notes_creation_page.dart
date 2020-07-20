@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/services/database.dart';
@@ -20,12 +21,19 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
 
   createNotes() {
     if (titleController.text.isNotEmpty && descController.text.isNotEmpty) {
+      List<String> searchStringList = List();
+      String temp = "";
+      for (var j = 0; j < titleController.text.length; j++) {
+        temp = temp + titleController.text[j];
+        searchStringList.add(temp);
+      }
       Map<String, dynamic> notesMap = {
         "title": titleController.text,
         "description": descController.text,
         "time": DateTime.now().millisecondsSinceEpoch,
         "category": _value,
-        "important": "false"
+        "important": "false",
+        "searchTerm": searchStringList
       };
 
       databaseMethods.addNotes(
@@ -93,28 +101,28 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                           child: Row(
                             children: [
                               GestureDetector(
-                                onTap:(){
+                                onTap: () {
                                   Navigator.pop(context);
                                 },
                                 child: Container(
-                                  height:50,
-                                  width:50,
-                                  decoration:BoxDecoration(
-                                    color:Colors.white,
-                                    shape:BoxShape.circle
-                                  ),
-                                  child:Icon(
-                                    Icons.arrow_back,
-                                    color:Theme.of(context).primaryColor
-                                  )
-                                ),
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle),
+                                    child: Icon(Icons.arrow_back,
+                                        color: Theme.of(context).primaryColor)),
                               ),
                               Container(
-                                constraints: BoxConstraints(maxWidth: screenWidth * 0.6),
-                                padding: const EdgeInsets.symmetric(vertical:6.0, horizontal:12.0),
+                                constraints:
+                                    BoxConstraints(maxWidth: screenWidth * 0.6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0),
                                 child: Text(
-                                  titleController.text != "" ? noteTitle : "New Note",
-                                  style: TextStyle(
+                                  titleController.text != ""
+                                      ? noteTitle
+                                      : "New Note",
+                                  style: GoogleFonts.grenze(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20.0),
@@ -143,7 +151,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                             },
                             child: Container(
                               height: 40.0,
-                              width:40,
+                              width: 40,
                               padding: EdgeInsets.symmetric(
                                   vertical: 4.0, horizontal: 0.0),
                               decoration: BoxDecoration(
@@ -162,8 +170,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight),
                               ),
-                              child: Icon(Icons.save,
-                                  color: Colors.white),
+                              child: Icon(Icons.save, color: Colors.white),
                             ))
                       ],
                     ),
@@ -186,7 +193,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                     children: [
                       TextField(
                         textCapitalization: TextCapitalization.words,
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Theme.of(context).indicatorColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 18.0),
@@ -198,7 +205,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                         },
                         decoration: InputDecoration(
                             hintText: "Enter Title",
-                            hintStyle: TextStyle(
+                            hintStyle: GoogleFonts.montserrat(
                                 color: Theme.of(context)
                                     .indicatorColor
                                     .withOpacity(0.5),
@@ -212,7 +219,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                         textCapitalization: TextCapitalization.sentences,
                         decoration: InputDecoration(
                             hintText: 'Enter Description',
-                            hintStyle: TextStyle(
+                            hintStyle: GoogleFonts.montserrat(
                                 color: Theme.of(context)
                                     .indicatorColor
                                     .withOpacity(0.5),
@@ -244,7 +251,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
         DropdownMenuItem(
             child: Text(
               "Normal",
-              style: TextStyle(
+              style: GoogleFonts.montserrat(
                   color: Theme.of(context).indicatorColor,
                   fontWeight: FontWeight.bold),
             ),
@@ -252,7 +259,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
         DropdownMenuItem(
             child: Text(
               "Work",
-              style: TextStyle(
+              style: GoogleFonts.montserrat(
                   color: Theme.of(context).indicatorColor,
                   fontWeight: FontWeight.bold),
             ),
@@ -273,11 +280,12 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
         });
       },
       value: _value,
-      style: TextStyle(color: Theme.of(context).indicatorColor, fontSize: 16.0),
+      style: GoogleFonts.montserrat(
+          color: Theme.of(context).indicatorColor, fontSize: 14.0),
       hint: Text(
         "Select category",
-        style:
-            TextStyle(color: Theme.of(context).indicatorColor.withOpacity(0.5)),
+        style: GoogleFonts.montserrat(
+            color: Theme.of(context).indicatorColor.withOpacity(0.5)),
       ),
       dropdownColor: Theme.of(context).backgroundColor,
     );
@@ -290,16 +298,16 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
           return AlertDialog(
             title: Text(
               "Warning",
-              style: TextStyle(color: Colors.black),
+              style: GoogleFonts.montserrat(color: Colors.black),
             ),
             content: Text(
               'Select a category type',
-              style: TextStyle(color: Colors.black),
+              style: GoogleFonts.montserrat(color: Colors.black),
             ),
             actions: [
               FlatButton(
                 child: Text('Ok',
-                    style: TextStyle(
+                    style: GoogleFonts.montserrat(
                       color: Colors.black,
                       fontSize: 16.0,
                     )),

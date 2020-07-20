@@ -1,15 +1,13 @@
-import 'dart:io';
 import 'package:firebase_admob/firebase_admob.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/helper/ad_manager.dart';
 import 'package:notes_app/helper/authenticate.dart';
 import 'package:notes_app/helper/dark_theme_shared_preference.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/app_settings.dart';
 import 'package:notes_app/pages/profile_photo_display.dart';
-import 'package:notes_app/pages/sign_in.dart';
 import 'package:notes_app/pages/voice_assistant_setings.dart';
 import 'package:notes_app/services/auth.dart';
 import 'package:notes_app/services/database.dart';
@@ -18,10 +16,10 @@ import 'package:flutter/material.dart';
 import 'homepage.dart';
 
 class ProfilePage extends StatefulWidget {
-  String name;
-  String userEmail;
-  int notesLength;
-  int specialNotesLength;
+  final String name;
+  final String userEmail;
+  final int notesLength;
+  final int specialNotesLength;
 
   ProfilePage(
       {Key key,
@@ -93,13 +91,14 @@ class _ProfilePageState extends State<ProfilePage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Do you want to LogOut'),
+              title: Text('Do you want to LogOut',
+                  style: GoogleFonts.montserrat()),
               actions: [
                 FlatButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text('No')),
+                    child: Text('No', style: GoogleFonts.montserrat())),
                 FlatButton(
                     onPressed: () {
                       authMethods.signOut();
@@ -118,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
 //                      Navigator.pushReplacement(context,
 //                          MaterialPageRoute(builder: (_) => SignInPage()));
                     },
-                    child: Text('Yes'))
+                    child: Text('Yes', style: GoogleFonts.montserrat()))
               ],
             );
           });
@@ -162,45 +161,47 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     child: Row(
                       children: [
-                        Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.5),
-                                  offset: Offset(2, 2),
-                                  blurRadius: 8.0,
-                                  spreadRadius: 2.0)
-                            ],
-                            gradient: LinearGradient(
+                        Hero(
+                          tag: 'back',
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.5),
+                                    offset: Offset(2, 2),
+                                    blurRadius: 8.0,
+                                    spreadRadius: 2.0)
+                              ],
+                              gradient: LinearGradient(
 //                                        colors:[Color(0xff1f5cfc), Colors.blue],
-                                colors: [Colors.white, Colors.white],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight),
+                                  colors: [Colors.white, Colors.white],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight),
+                            ),
+                            // padding: EdgeInsets.symmetric(
+                            //     vertical: 8.0, horizontal: 16.0),
+                            child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => HomePage()),
+                                      (route) => false);
+                                },
+                                child: Icon(Icons.arrow_back,
+                                    color: Theme.of(context).primaryColor)),
                           ),
-                          // padding: EdgeInsets.symmetric(
-                          //     vertical: 8.0, horizontal: 16.0),
-                          child: GestureDetector(
-                              onTap: () {
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => HomePage()),
-                                    (route) => false);
-                              },
-                              child: Icon(Icons.arrow_back,
-                                  color: Theme.of(context).primaryColor)),
                         ),
                         Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 4.0, horizontal: 12.0),
+                            padding: EdgeInsets.symmetric(horizontal: 12.0),
                             child: Text(
                               'Profile Page',
-                              style: TextStyle(
+                              style: GoogleFonts.grenze(
                                   color: Colors.white,
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold),
@@ -224,7 +225,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 )));
                   },
                   child: Hero(
-                    tag: '$imageUrl',
+                    tag: 'imageUrl',
                     child: Container(
                       alignment: Alignment.center,
                       child: Container(
@@ -257,9 +258,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   alignment: Alignment.center,
                   child: Text(
                     widget.name,
-                    style: TextStyle(
+                    style: GoogleFonts.grenze(
                         color: Theme.of(context).indicatorColor,
-                        fontSize: 30.0,
+                        fontSize: 34.0,
                         fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -386,7 +387,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               SizedBox(width: 8),
                               Text(
                                 'LogOut',
-                                style: TextStyle(
+                                style: GoogleFonts.montserrat(
                                     color: Colors.white,
                                     fontSize: 16.0,
                                     fontWeight: FontWeight.w500),
@@ -412,7 +413,7 @@ class ProfileNotesPageCard extends StatelessWidget {
   final double screenWidth;
   final String textData;
   final int countData;
-  int index;
+  final int index;
 
   ProfileNotesPageCard(
       {Key key,
@@ -450,7 +451,7 @@ class ProfileNotesPageCard extends StatelessWidget {
             children: [
               Text(
                 textData,
-                style: TextStyle(
+                style: GoogleFonts.fondamento(
                     color: Colors.white,
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold),
@@ -459,7 +460,7 @@ class ProfileNotesPageCard extends StatelessWidget {
                 child: countData != null
                     ? Text(
                         countData.toString(),
-                        style: TextStyle(
+                        style: GoogleFonts.montserrat(
                             color: Colors.white,
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold),
@@ -473,7 +474,7 @@ class ProfileNotesPageCard extends StatelessWidget {
 }
 
 class SettingsWidget extends StatelessWidget {
-  String text;
+  final String text;
 
   SettingsWidget({this.text});
 
@@ -499,8 +500,8 @@ class SettingsWidget extends StatelessWidget {
           child: Text(
         text,
         textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white, fontSize: 18.0, fontWeight: FontWeight.w500),
+        style: GoogleFonts.montserrat(
+            color: Colors.white, fontSize: 17.0, fontWeight: FontWeight.w500),
       )),
     );
   }
