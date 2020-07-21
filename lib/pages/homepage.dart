@@ -98,13 +98,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   AsyncSnapshot snapshot;
   Stream importanNotesStream;
   Stream specialImportantNotesStream;
-  Stream notesSearchStream;
-  Stream specialNotesSearchStream;
+  QuerySnapshot notesSearchStream;
+  QuerySnapshot specialNotesSearchStream;
   TextEditingController titleController = new TextEditingController();
   TextEditingController searchController = new TextEditingController();
 
   List<String> extractedWords;
   List<File> imgs;
+  String searchStringValue;
   bool isVideo = false;
   File pickedImage;
   File pickedImageFromCamera;
@@ -165,8 +166,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future readMultipleText(File imagePicked, {int i, int length}) async {
-    FirebaseVisionImage image = FirebaseVisionImage.fromFile(imagePicked);
-    TextRecognizer recognizeText = FirebaseVision.instance.textRecognizer();
+    FirebaseVisionImage image = FirebaseVisionImage.fromFile(
+        imagePicked); //this line is used to get firebase vision image
+    TextRecognizer recognizeText = FirebaseVision.instance
+        .textRecognizer(); //this line is used to initilaize the text recognizer
     VisionText readText = await recognizeText.processImage(image);
 
     for (TextBlock block in readText.blocks) {
@@ -866,6 +869,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 child: TextFormField(
                                   controller: searchController,
                                   onChanged: (searchString) {
+                                    setState(() {
+                                      searchStringValue = searchString;
+                                      print("Search String Value is " +
+                                          searchStringValue);
+                                    });
                                     print(searchString);
                                     if (searchString == null ||
                                         searchString == "") {
@@ -1035,9 +1043,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ],
                 ),
                 Expanded(
-                    child: tabBarViewWidget(
-                        notesSearchStreamv: notesSearchStream,
-                        specialNotesSearchStreamv: specialNotesSearchStream)),
+                  child: tabBarViewWidget(string: searchStringValue),
+                ),
+//                Expanded(
+//                    child: tabBarViewWidget(
+//                        notesSearchStreamv: notesSearchStream,
+//                        specialNotesSearchStreamv: specialNotesSearchStream)),
               ],
             )),
       ),
@@ -1100,13 +1111,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget tabBarViewWidget(
-      {Stream notesSearchStreamv, Stream specialNotesSearchStreamv}) {
+  Widget tabBarViewWidget({String string}) {
     return TabBarView(controller: tabController, children: [
       categoryIndex == 1
           ? isSearching == false
               ? notesList(notesStreamlist: notesStream)
-              : searchNotesList(searchStream: notesSearchStreamv)
+              : searchNotesList(snapshot: notesSearchStream, string: string)
           : notesList(notesStreamlist: specialNotesStream),
       categoryIndex == 1
           ? getImportantNotesList(notesStreamList: importanNotesStream)
@@ -1114,31 +1124,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     ]);
   }
 
-  Widget searchNotesList({Stream searchStream}) {
-    return StreamBuilder(
-        stream: searchStream,
-        builder: (context, snapshot) {
-          return snapshot.hasData
-              ? ListView.builder(
-                  itemCount: snapshot.data.documents.length,
-                  itemBuilder: (context, index) {
-                    if (snapshot.hasData) {
-                      print(snapshot.data.documents[index].data["title"]);
-                    }
-                    return ListTile(
-                      title: Text(snapshot.data.documents[index].data["title"],
-                          style: TextStyle(
-                              color: Theme.of(context).indicatorColor)),
-                      subtitle: Text(
-                          snapshot.data.documents[index].data["description"],
-                          maxLines: 1,
-                          style: TextStyle(
-                              color: Theme.of(context).indicatorColor)),
-                    );
-                  },
-                )
-              : Container(child: Center(child: CircularProgressIndicator()));
-        });
+  Widget searchNotesList({QuerySnapshot snapshot, String string}) {
+    return ListView.builder(
+      itemCount: snapshot.documents.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(snapshot.documents[index].data["title"],
+              style: TextStyle(color: Theme.of(context).indicatorColor)),
+          subtitle: Text(snapshot.documents[index].data["description"],
+              maxLines: 1,
+              style: TextStyle(color: Theme.of(context).indicatorColor)),
+        );
+      },
+    );
   }
 
   getSpecialNotes({String email}) {
@@ -1339,9 +1337,12 @@ class NotesPageCard extends StatelessWidget {
 }
 
 class CustomSettingButton extends StatelessWidget {
+  //Just created a new customSetting button for style
   final Color color;
 
-  CustomSettingButton({this.color = Colors.black});
+  CustomSettingButton(
+      {this.color = Colors
+          .black}); //This is a sample speed test of my android studio in ubuntu
 
   @override
   Widget build(BuildContext context) {

@@ -45,15 +45,23 @@ class DatabaseMethods {
     });
   }
 
+//  searchNotes({String notesRoomId, String value}) async {
+//    return await Firestore.instance
+//        .collection("Notes")
+//        .document(notesRoomId)
+//        .collection("notes")
+//        .where("searchTerm", arrayContains: value)
+//        .snapshots();
+//  }
+
   searchNotes({String notesRoomId, String value}) async {
     return await Firestore.instance
         .collection("Notes")
         .document(notesRoomId)
-        .collection("notes")
-        .where("searchTerm", arrayContains: value)
-        .snapshots();
+        .collection("notes").orderBy("time", descending:false).getDocuments();
   }
 
+//
   createFriendsRoom({String roomId, roomDataMap}) async {
     Firestore.instance
         .collection("Friends")
