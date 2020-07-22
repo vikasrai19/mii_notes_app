@@ -8,6 +8,11 @@ import 'package:notes_app/services/auth.dart';
 import 'package:notes_app/services/database.dart';
 
 bool isSearching;
+Stream searchStream;
+QuerySnapshot friendsSnapshot;
+String myEmail;
+List friends;
+String searchValue;
 
 class ChatScreenPage extends StatefulWidget {
   final String email;
@@ -20,11 +25,6 @@ class ChatScreenPage extends StatefulWidget {
 class _ChatScreenPageState extends State<ChatScreenPage> {
   TextEditingController searchController = new TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
-
-  Stream searchStream;
-  QuerySnapshot friendsSnapshot;
-  String myEmail;
-  List friends;
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
-    String value;
+
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
@@ -68,11 +68,13 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                     Expanded(
                       child: TextFormField(
                         onChanged: (string) {
+                          setState(() {
+                            searchValue = string;
+                          });
                           print(string);
                           if (string == null || string == "") {
                             setState(() {
                               isSearching = false;
-                              value = string;
                             });
                             print(isSearching);
                           } else {
@@ -173,27 +175,33 @@ class _SearchListViewState extends State<SearchListView> {
                   itemBuilder: (context, index) {
                     if (widget.friendList != null &&
                         widget.friendList.contains(snapshot
-                                .data.documents[index].data["userEmail"]) ==
+                            .data.documents[index].data["userEmail"]) ==
                             true) {
                       isFriend = true;
                     } else {
                       isFriend = false;
                     }
-                    if (widget.friendList != null &&
+
+                    return widget.friendList != null &&
                         snapshot.data.documents[index].data["userEmail"] !=
-                            widget.myEmail) {
-                      return ListTile(
-                        leading: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
+                            widget.myEmail ?
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical:8.0, horizontal:8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: snapshot.data.documents[index]
+                                color: snapshot.data.documents[index]
                                           .data["imageUrl"] !=
                                       null
                                   ? Colors.transparent
-                                  : Colors.grey),
-                          child: snapshot
+                                  : Colors.grey
+                            ),
+                              child: snapshot
                                       .data.documents[index].data["imageUrl"] !=
                                   null
                               ? ClipRRect(
@@ -207,10 +215,42 @@ class _SearchListViewState extends State<SearchListView> {
                               : Icon(Icons.person,
                                   color: Theme.of(context).indicatorColor),
                         ),
-                        trailing: GestureDetector(
-                          onTap: () {
-                            if (isFriend == false) {
-                              print("Add");
+                          SizedBox(width:8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  snapshot.data.documents[index].data["name"],
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.left,
+                                  style: GoogleFonts.montserrat(
+                                      fontSize: 18.0,
+                                      color: Theme
+                                          .of(context)
+                                          .indicatorColor
+                                  ),
+                                ),
+                                Text(
+                                    snapshot.data.documents[index]
+                                        .data["userEmail"],
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 12.0,
+                                        color: Theme
+                                            .of(context)
+                                            .indicatorColor
+                                            .withOpacity(0.5)
+                                    )
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(width:8),
+                          Container(
+                            child: isFriend == false ? GestureDetector(
+                              onTap:(){
+                                print("Add");
                               if (widget.friendList.contains(snapshot.data
                                       .documents[index].data["userEmail"]) ==
                                   false) {
@@ -235,54 +275,148 @@ class _SearchListViewState extends State<SearchListView> {
                                         .data["userEmail"],
                                     friendData: myData);
                               }
-                            }
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 30,
-                            width: 60.0,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Colors.blue,
-                            ),
-                            child: isFriend
-                                ? Text(
-                                    "Message",
-                                    style: GoogleFonts.montserrat(
-                                        color: Colors.white, fontSize: 10),
-                                  )
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Add",
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.white, fontSize: 12),
-                                      ),
-                                      Icon(Icons.add,
-                                          color: Colors.white, size: 12)
-                                    ],
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal:16.0),
+                                alignment:Alignment.center,
+                                height: 40.0,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  color:Colors.blue
+                                ),
+                                child:Text(
+                                  'Add +',
+                                  style: GoogleFonts.montserrat(
+                                    color:Colors.white,
+                                    fontSize:12.0
                                   ),
-                          ),
-                        ),
-                        title: Text(
-                          snapshot.data.documents[index].data["name"],
-                          style: GoogleFonts.montserrat(
-                              color: Theme.of(context).indicatorColor,
-                              fontSize: 16),
-                        ),
-                        subtitle: AutoSizeText(
-                          snapshot.data.documents[index].data["userEmail"],
-                          style: GoogleFonts.montserrat(
-                              color: Theme.of(context).indicatorColor,
-                              fontSize: 12),
-                          minFontSize: 8,
-                          maxFontSize: 12,
-                        ),
-                      );
-                    }
-                  },
-                )
+                                )
+                              ),
+                            ) : Container(
+                              padding:EdgeInsets.symmetric(horizontal:12.0),
+                                alignment:Alignment.center,
+                                height: 40.0,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    color:Colors.blue
+                                ),
+                                child:Text(
+                                  'Message',
+                                  style: GoogleFonts.montserrat(
+                                      color:Colors.white,
+                                    fontSize:12.0
+                                  ),
+                                )
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                        : Container();
+//                    if (widget.friendList != null &&
+//                        snapshot.data.documents[index].data["userEmail"] !=
+//                            widget.myEmail) {
+//                      return ListTile(
+//                        leading: Container(
+//                          height: 40,
+//                          width: 40,
+//                          decoration: BoxDecoration(
+//                              shape: BoxShape.circle,
+//                              color: snapshot.data.documents[index]
+//                                          .data["imageUrl"] !=
+//                                      null
+//                                  ? Colors.transparent
+//                                  : Colors.grey),
+//                          child: snapshot
+//                                      .data.documents[index].data["imageUrl"] !=
+//                                  null
+//                              ? ClipRRect(
+//                                  borderRadius:
+//                                      BorderRadius.all(Radius.circular(25.0)),
+//                                  child: Image.network(
+//                                      snapshot.data.documents[index]
+//                                          .data["imageUrl"],
+//                                      fit: BoxFit.cover),
+//                                )
+//                              : Icon(Icons.person,
+//                                  color: Theme.of(context).indicatorColor),
+//                        ),
+//                        trailing: GestureDetector(
+//                          onTap: () {
+//                            if (isFriend == false) {
+//                              print("Add");
+//                              if (widget.friendList.contains(snapshot.data
+//                                      .documents[index].data["userEmail"]) ==
+//                                  false) {
+//                                Map<String, dynamic> data = {
+//                                  "friends": FieldValue.arrayUnion([
+//                                    snapshot
+//                                        .data.documents[index].data["userEmail"]
+//                                  ])
+//                                };
+//                                Map<String, dynamic> myData = {
+//                                  "friends":
+//                                      FieldValue.arrayUnion([widget.myEmail])
+//                                };
+//                                setState(() {
+//                                  isFriend = true;
+//                                });
+//                                databaseMethods.addFriends(
+//                                    roomId: widget.myEmail, friendData: data);
+//
+//                                databaseMethods.addFriends(
+//                                    roomId: snapshot.data.documents[index]
+//                                        .data["userEmail"],
+//                                    friendData: myData);
+//                              }
+//                            }
+//                          },
+//                          child: Container(
+//                            alignment: Alignment.center,
+//                            height: 30,
+//                            width: 60.0,
+//                            decoration: BoxDecoration(
+//                              borderRadius: BorderRadius.circular(15),
+//                              color: Colors.blue,
+//                            ),
+//                            child: isFriend
+//                                ? Text(
+//                                    "Message",
+//                                    style: GoogleFonts.montserrat(
+//                                        color: Colors.white, fontSize: 10),
+//                                  )
+//                                : Row(
+//                                    mainAxisAlignment: MainAxisAlignment.center,
+//                                    children: [
+//                                      Text(
+//                                        "Add",
+//                                        style: GoogleFonts.montserrat(
+//                                            color: Colors.white, fontSize: 12),
+//                                      ),
+//                                      Icon(Icons.add,
+//                                          color: Colors.white, size: 12)
+//                                    ],
+//                                  ),
+//                          ),
+//                        ),
+//                        title: Text(
+//                          snapshot.data.documents[index].data["name"],
+//                          style: GoogleFonts.montserrat(
+//                              color: Theme.of(context).indicatorColor,
+//                              fontSize: 16),
+//                        ),
+//                        subtitle: AutoSizeText(
+//                          snapshot.data.documents[index].data["userEmail"],
+//                          style: GoogleFonts.montserrat(
+//                              color: Theme.of(context).indicatorColor,
+//                              fontSize: 12),
+//                          minFontSize: 8,
+//                          maxFontSize: 12,
+//                        ),
+//                      );
+//                    }
+//                  },
+                  })
               : Container(
                   height: widget.screenHeight * 0.35,
                   width: widget.screenWidth,

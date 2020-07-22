@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart' as IP;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:notes_app/helper/ad_manager.dart';
+import 'package:notes_app/helper/constants.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/pages/profile_page.dart';
@@ -98,14 +99,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   AsyncSnapshot snapshot;
   Stream importanNotesStream;
   Stream specialImportantNotesStream;
-  QuerySnapshot notesSearchStream;
-  QuerySnapshot specialNotesSearchStream;
+  Stream notesSearchStream;
+  Stream specialNotesSearchStream;
   TextEditingController titleController = new TextEditingController();
   TextEditingController searchController = new TextEditingController();
 
   List<String> extractedWords;
   List<File> imgs;
-  String searchStringValue;
   bool isVideo = false;
   File pickedImage;
   File pickedImageFromCamera;
@@ -135,10 +135,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     categoryIndex = widget.index == null ? 1 : widget.index;
     isImportant = true;
 //    _nativeAdmob.initialize(appID: AdManager.appId);
-    FirebaseAdMob.instance.initialize(appId: AdManager.appId);
-    bannerAd = createBannerAd()
-      ..load()
-      ..show();
+    HelperFunction.getAdsPrevInSharedPreference().then((value) {
+      if(value != null && value == true){
+        FirebaseAdMob.instance.initialize(appId: AdManager.appId);
+        bannerAd = createBannerAd()
+          ..load()
+          ..show();
+      }
+    });
   }
 
   @override
@@ -742,6 +746,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    SizeConstants().init(context);
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
@@ -750,7 +755,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: Container(
             color: Theme.of(context).backgroundColor,
             height: screenHeight,
-            padding: EdgeInsets.only(bottom: 51),
+            padding: EdgeInsets.only(bottom: SizeConstants.bottomPadding),
             width: screenWidth,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -823,15 +828,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                             Row(
                               children: [
-                                GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        searchEnabled = true;
-                                      });
-                                    },
-                                    child: Icon(Icons.search,
-                                        color:
-                                            Theme.of(context).indicatorColor)),
+//                                GestureDetector(
+//                                    onTap: () {
+//                                      setState(() {
+//                                        searchEnabled = true;
+//                                      });
+//                                    },
+//                                    child: Icon(Icons.search,
+//                                        color:
+//                                            Theme.of(context).indicatorColor)),
                                 SizedBox(width: 10),
                                 GestureDetector(
                                   child: Container(
@@ -869,11 +874,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 child: TextFormField(
                                   controller: searchController,
                                   onChanged: (searchString) {
-                                    setState(() {
-                                      searchStringValue = searchString;
-                                      print("Search String Value is " +
-                                          searchStringValue);
-                                    });
                                     print(searchString);
                                     if (searchString == null ||
                                         searchString == "") {
@@ -887,7 +887,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       databaseMethods
                                           .searchNotes(
                                               notesRoomId: email,
-                                              value: searchString)
+                                              value: searchController.text)
                                           .then((value) {
                                         setState(() {
                                           notesSearchStream = value;
@@ -1043,7 +1043,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ],
                 ),
                 Expanded(
-                  child: tabBarViewWidget(string: searchStringValue),
+                  child: tabBarViewWidget(),
                 ),
 //                Expanded(
 //                    child: tabBarViewWidget(
@@ -1111,12 +1111,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget tabBarViewWidget({String string}) {
+  Widget tabBarViewWidget() {
     return TabBarView(controller: tabController, children: [
-      categoryIndex == 1
-          ? isSearching == false
-              ? notesList(notesStreamlist: notesStream)
-              : searchNotesList(snapshot: notesSearchStream, string: string)
+      categoryIndex == 1 ? notesList(notesStreamlist: notesStream)
           : notesList(notesStreamlist: specialNotesStream),
       categoryIndex == 1
           ? getImportantNotesList(notesStreamList: importanNotesStream)
@@ -1124,17 +1121,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     ]);
   }
 
-  Widget searchNotesList({QuerySnapshot snapshot, String string}) {
-    return ListView.builder(
-      itemCount: snapshot.documents.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(snapshot.documents[index].data["title"],
-              style: TextStyle(color: Theme.of(context).indicatorColor)),
-          subtitle: Text(snapshot.documents[index].data["description"],
-              maxLines: 1,
-              style: TextStyle(color: Theme.of(context).indicatorColor)),
-        );
+  Widget searchNotesList({Stream searchStream}) {
+    return StreamBuilder(
+      stream:searchStream,
+      builder: (context, snapshot){
+        return snapshot.hasData ? ListView.builder(
+          itemCount: snapshot.data.documents.length,
+          itemBuilder: (context, index) {
+            print("Title is " + snapshot.data.documents[index].data["title"]);
+            return snapshot.data.documents[index].data["title"].contains(searchController.text) ? ListTile(
+              title: Text(snapshot.data.documents[index].data["title"],
+                  style: TextStyle(color: Theme.of(context).indicatorColor)),
+              subtitle: Text(snapshot.data.documents[index].data["description"],
+                  maxLines: 1,
+                  style: TextStyle(color: Theme.of(context).indicatorColor)),
+            ):Container();
+          },
+        ):Container(child: Center(child: CircularProgressIndicator(),),);
       },
     );
   }

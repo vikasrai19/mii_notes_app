@@ -16,6 +16,7 @@ class HelperFunction {
   static String isUserValidAttempt = "VALIDATTEMPTKEY";
   static String notesCountInSharedPreference = "NOTESCOUNTKEY";
   static String specialNotesCountInSharedPreference = "SPECIALNOTESCOUNTKEY";
+  static String adsPreveligeInSharedPreference = "ADSPREVKEY";
 
   //save data in sharedpreference
 
@@ -23,6 +24,11 @@ class HelperFunction {
       bool isUserLoggedIn) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return await prefs.setBool(sharedPreferenceUserLoggedInKey, isUserLoggedIn);
+  }
+
+  static Future<bool> saveUserAdsPrevInSharedPreference(bool isAdShown) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return await prefs.setBool(adsPreveligeInSharedPreference, isAdShown);
   }
 
   static Future<bool> saveNotesCountInSharedPreference(int count) async {
@@ -98,6 +104,11 @@ class HelperFunction {
   static Future<bool> getUserLoggedInSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(sharedPreferenceUserLoggedInKey);
+  }
+
+  static Future<bool> getAdsPrevInSharedPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return await prefs.getBool(adsPreveligeInSharedPreference);
   }
 
   static Future<int> getNotesCountFromSharedPreference() async {

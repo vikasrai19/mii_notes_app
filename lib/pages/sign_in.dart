@@ -43,6 +43,7 @@ class _SignInPageState extends State<SignInPage>
 
   Animation animation;
   AnimationController animationController;
+  QuerySnapshot noAdsSnapshot;
 
   @override
   void initState() {
@@ -92,6 +93,13 @@ class _SignInPageState extends State<SignInPage>
           });
           HelperFunction.saveUserLoggedInSharedPreference(true);
           HelperFunction.saveUserEmailInSharedPreference(emailController.text);
+          databaseMethods.getNoAdsList(email: emailController.text).then((value){
+            if(value != null){
+              HelperFunction.saveUserAdsPrevInSharedPreference(false);
+            }else{
+              HelperFunction.saveUserAdsPrevInSharedPreference(true);
+            }
+          });
           // databaseMethods
           //     .getUserByUserEmail(email: emailController.text)
           //     .then((val) {

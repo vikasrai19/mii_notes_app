@@ -1,3 +1,6 @@
+import 'package:notes_app/helper/helper_functions.dart';
+import 'package:flutter/widgets.dart';
+
 class Constants {
   static String myName = "";
 }
@@ -28,4 +31,17 @@ class AssistantLanguages {
     kannadaIndia,
     gujarathiIndia,
   ];
+}
+
+class SizeConstants {
+
+  static bool showAds;
+  static double bottomPadding;
+  void init(BuildContext context){
+    HelperFunction.getAdsPrevInSharedPreference().then((value){
+      showAds = value;
+    });
+
+    bottomPadding = showAds ? 60.0 : 20.0;
+  }
 }
