@@ -115,6 +115,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final CalendarPlugin calendarPlugin = CalendarPlugin();
   bool isSearching;
   bool searchEnabled;
+  bool showAds = false;
 
   @override
   void initState() {
@@ -137,10 +138,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 //    _nativeAdmob.initialize(appID: AdManager.appId);
     HelperFunction.getAdsPrevInSharedPreference().then((value) {
       if(value != null && value == true){
+        showAds = true;
         FirebaseAdMob.instance.initialize(appId: AdManager.appId);
         bannerAd = createBannerAd()
           ..load()
           ..show();
+      }else{
+        showAds = false;
       }
     });
   }
@@ -839,23 +843,41 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 //                                            Theme.of(context).indicatorColor)),
                                 SizedBox(width: 10),
                                 GestureDetector(
-                                  child: Container(
-                                      padding: EdgeInsets.all(2.0),
-                                      child: Icon(Icons.message,
-                                          color: Theme.of(context)
-                                              .indicatorColor)),
-                                  onTap: () {
-                                    print("tapped");
-                                    if (email == "vikasrai1906@gmail.com") {
-                                      Navigator.push(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (_) => ChatScreenPage(
-                                                    email: email,
-                                                  )));
-                                    }
+                                  onTap:(){
+                                    Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => ProfilePage(
+                                              name: name,
+                                              userEmail: email,
+                                              notesLength: notesLength,
+                                              specialNotesLength:
+                                                  specialNotesLength,
+                                            )));
                                   },
-                                ),
+                                  child:Icon( 
+                                    Icons.settings,
+                                    color:Theme.of(context).indicatorColor
+                                  )
+                                )
+                                // GestureDetector(
+                                //   child: Container(
+                                //       padding: EdgeInsets.all(2.0),
+                                //       child: Icon(Icons.message,
+                                //           color: Theme.of(context)
+                                //               .indicatorColor)),
+                                //   onTap: () {
+                                //     print("tapped");
+                                //     if (email == "vikasrai1906@gmail.com") {
+                                //       Navigator.push(
+                                //           context,
+                                //           CupertinoPageRoute(
+                                //               builder: (_) => ChatScreenPage(
+                                //                     email: email,
+                                //                   )));
+                                //     }
+                                //   },
+                                // ),
                               ],
                             )
                           ],
