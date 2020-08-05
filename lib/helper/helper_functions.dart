@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HelperFunction {
   static String sharedPreferenceUserLoggedInKey = "ISLOGGEDIN";
   static String sharedPreferenceUserEmailKey = 'USEREMAILKEY';
+  static String sharedPreferenceUserUidKey = "USERUIDKEY";
   static String sharedPreferenceNameKey = "NAMEKEY";
   static String sharedPreferenceImageKey = "PROFILEIMAGEKEY";
   static String assistantLangInSharedPreferences = "ASSISTANTLANGKEY";
@@ -24,6 +25,11 @@ class HelperFunction {
       bool isUserLoggedIn) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return await prefs.setBool(sharedPreferenceUserLoggedInKey, isUserLoggedIn);
+  }
+
+  static Future<bool> saveUserUidInSharedPreferences(String uid) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString(sharedPreferenceUserUidKey, uid);
   }
 
   static Future<bool> saveUserAdsPrevInSharedPreference(bool isAdShown) async {
@@ -104,6 +110,11 @@ class HelperFunction {
   static Future<bool> getUserLoggedInSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(sharedPreferenceUserLoggedInKey);
+  }
+
+  static Future<String> getUserUidFromSharedPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(sharedPreferenceUserUidKey);
   }
 
   static Future<bool> getAdsPrevInSharedPreference() async {

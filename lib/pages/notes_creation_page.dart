@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:notes_app/helper/constants.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/services/database.dart';
 
 class NotesCreatorPage extends StatefulWidget {
-  NotesCreatorPage({Key key}) : super(key: key);
+  String uid;
+  NotesCreatorPage({Key key, this.uid}) : super(key: key);
 
   @override
   _NotesCreatorPageState createState() => _NotesCreatorPageState();
@@ -18,6 +20,7 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
   String noteTitle = "";
   String email;
   var _value;
+  bool showAds;
 
   createNotes() {
     if (titleController.text.isNotEmpty && descController.text.isNotEmpty) {
@@ -33,11 +36,14 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
         "time": DateTime.now().millisecondsSinceEpoch,
         "category": _value,
         "important": "false",
-        "searchTerm": searchStringList
+        "searchTerm": searchStringList,
+        "uid": widget.uid
       };
 
       databaseMethods.addNotes(
-          notesMap: notesMap, notesRoomId: email, title: titleController.text);
+          notesMap: notesMap,
+          notesRoomId: widget.uid,
+          title: titleController.text);
     }
   }
 
@@ -48,12 +54,24 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
         email = value;
       });
     });
+    HelperFunction.getAdsPrevInSharedPreference().then((value) {
+      if (value != null && value == true) {
+        setState(() {
+          showAds = true;
+        });
+      } else {
+        setState(() {
+          showAds = false;
+        });
+      }
+    });
     super.initState();
     print(_value);
   }
 
   @override
   Widget build(BuildContext context) {
+    SizeConstants(showAds: showAds).init(context);
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 

@@ -33,19 +33,21 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
 
   createNotes() {
     if (titleController.text.isNotEmpty) {
-      List<String> searchStringList = List();
-      String temp = "";
-      for (var j = 0; j < titleController.text.length; j++) {
-        temp = temp + titleController.text[j];
-        searchStringList.add(temp);
-      }
+      // List<String> searchStringList = List();
+      // String temp = "";
+      // for (var j = 0; j < titleController.text.length; j++) {
+      //   temp = temp + titleController.text[j];
+      //   searchStringList.add(temp);
+      // }
       Map<String, dynamic> notesMap = {
         "title": titleController.text,
         "description": finalDescription,
         // "time": DateTime.now().millisecondsSinceEpoch,
-        "category": _value,
-        "searchTerm": searchStringList
+        "category": _value
+        // "searchTerm": searchStringList
       };
+      print("Description is " + finalDescription);
+      print("My email is " + email);
 
       databaseMethods.updateNotes(
           notesRoomId: email,
@@ -62,6 +64,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
       });
     });
     _value = widget.category;
+    finalDescription = widget.description;
     super.initState();
   }
 
@@ -71,7 +74,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
     titleController.text = widget.title;
-    finalDescription = widget.description;
+
     // descController.text = widget.description;
 
     return Scaffold(

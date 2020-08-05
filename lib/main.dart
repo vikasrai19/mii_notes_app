@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
             home: isViewed == null || isViewed == false
                 ? OnBoardScreen()
                 : isLoggedIn != null
-                    ? isLoggedIn ? HomePage() : Authenticate()
+                    ? isLoggedIn ? HomePage(index: 1) : Authenticate()
                     : Authenticate(),
 //             home: isLoggedIn != null
 //                ? isLoggedIn ? HomePage() : Authenticate()

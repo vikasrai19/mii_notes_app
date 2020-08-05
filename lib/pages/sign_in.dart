@@ -80,6 +80,14 @@ class _SignInPageState extends State<SignInPage>
           });
         });
 
+        // databaseMethods.getNoAdsList(email: emailController.text).then((value) {
+        //   if (value != null) {
+        //     HelperFunction.saveUserAdsPrevInSharedPreference(false);
+        //   } else {
+        //     HelperFunction.saveUserAdsPrevInSharedPreference(true);
+        //   }
+        // });
+
         HelperFunction.getUserPasswordCorrectState().then((value) {
           setState(() {
             isPasswordCorrect = value;
@@ -91,15 +99,10 @@ class _SignInPageState extends State<SignInPage>
             isSecondAttemptValid = true;
             isSecondPassValid = true;
           });
+
           HelperFunction.saveUserLoggedInSharedPreference(true);
           HelperFunction.saveUserEmailInSharedPreference(emailController.text);
-          databaseMethods.getNoAdsList(email: emailController.text).then((value){
-            if(value != null){
-              HelperFunction.saveUserAdsPrevInSharedPreference(false);
-            }else{
-              HelperFunction.saveUserAdsPrevInSharedPreference(true);
-            }
-          });
+
           // databaseMethods
           //     .getUserByUserEmail(email: emailController.text)
           //     .then((val) {

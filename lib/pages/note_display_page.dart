@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:notes_app/helper/constants.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/notes_editing_page.dart';
 import 'package:share/share.dart';
@@ -15,8 +16,10 @@ class NotesDisplayPage extends StatefulWidget {
   final String title;
   final String description;
   final String category;
+  final bool showAds;
 
-  NotesDisplayPage({Key key, this.title, this.description, this.category})
+  NotesDisplayPage(
+      {Key key, this.title, this.description, this.category, this.showAds})
       : super(key: key);
 
   @override
@@ -29,6 +32,7 @@ class _NotesDisplayPageState extends State<NotesDisplayPage> {
   String lang;
   double pitch;
   double volume;
+  bool showAds;
 
   double _width = 50;
   double _height = 50;
@@ -62,11 +66,32 @@ class _NotesDisplayPageState extends State<NotesDisplayPage> {
         volume = value;
       });
     });
+    HelperFunction.getAdsPrevInSharedPreference().then((value) {
+      if (value != null && value == true) {
+        setState(() {
+          showAds = true;
+          print("new state of show ads is");
+          print(showAds);
+        });
+      } else if (value != null && value == false) {
+        setState(() {
+          showAds = false;
+          print("new state of show ads is");
+          print(showAds);
+        });
+      }
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    print("The showAds value is");
+    // print(widget.showAds);
+    // if (widget.showAds != null) {
+    //   SizeConstants(showAds: false).init(context);
+    // }
+    // SizeConstants(showAds: true).init(context);
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
@@ -108,8 +133,11 @@ class _NotesDisplayPageState extends State<NotesDisplayPage> {
             SafeArea(
                 child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 16.0, right: 16, bottom: 55, top: 16),
+                padding: EdgeInsets.only(
+                    left: 16.0,
+                    right: 16,
+                    bottom: showAds == true ? 55.0 : 20.0,
+                    top: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

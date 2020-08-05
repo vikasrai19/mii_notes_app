@@ -13,9 +13,10 @@ class SpecialNotesDisplayPage extends StatefulWidget {
   final String title;
   final String description;
   final String category;
+  final bool showAds;
 
   SpecialNotesDisplayPage(
-      {Key key, this.title, this.description, this.category})
+      {Key key, this.title, this.description, this.category, this.showAds})
       : super(key: key);
 
   @override

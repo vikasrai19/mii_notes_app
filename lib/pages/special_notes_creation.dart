@@ -7,7 +7,8 @@ import 'package:notes_app/services/database.dart';
 class SpecialNotesCreationPage extends StatefulWidget {
   final String description;
   final String category;
-  SpecialNotesCreationPage({Key key, this.description, this.category})
+  final String uid;
+  SpecialNotesCreationPage({Key key, this.description, this.category, this.uid})
       : super(key: key);
 
   @override
@@ -38,11 +39,14 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
         "time": DateTime.now().millisecondsSinceEpoch,
         "category": _value,
         "searchTerm": searchStringList,
-        "important": "false"
+        "important": "false",
+        "uid": widget.uid
       };
 
       databaseMethods.addSpecialNotes(
-          notesMap: notesMap, notesRoomId: email, title: titleController.text);
+          notesMap: notesMap,
+          notesRoomId: widget.uid,
+          title: titleController.text);
     }
   }
 

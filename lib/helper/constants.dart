@@ -34,14 +34,15 @@ class AssistantLanguages {
 }
 
 class SizeConstants {
-
-  static bool showAds;
+  bool showAds;
+  SizeConstants({this.showAds});
   static double bottomPadding;
-  void init(BuildContext context){
-    HelperFunction.getAdsPrevInSharedPreference().then((value){
-      showAds = value;
-    });
-
+  void init(BuildContext context) {
+    // HelperFunction.getAdsPrevInSharedPreference().then((value) {
+    //   showAds = value;
+    // });
+    print("The final showAds value is");
+    print(showAds);
     bottomPadding = showAds ? 60.0 : 20.0;
   }
 }

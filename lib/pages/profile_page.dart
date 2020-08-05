@@ -61,10 +61,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    FirebaseAdMob.instance.initialize(appId: AdManager.appId);
-    bannerAd = createBannerAd()
-      ..load()
-      ..show();
+    // FirebaseAdMob.instance.initialize(appId: AdManager.appId);
+    // bannerAd = createBannerAd()
+    //   ..load()
+    //   ..show();
     darkThemePreference.getTheme().then((value) {
       setState(() {
         switchControl = value;
@@ -102,9 +102,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 FlatButton(
                     onPressed: () {
                       authMethods.signOut();
+                      HelperFunction.saveUserAdsPrevInSharedPreference(null);
                       HelperFunction.saveUserLoggedInSharedPreference(false);
                       HelperFunction.saveUserProfileImageInSharedPreference(
                           null);
+                      HelperFunction.saveUserUidInSharedPreferences(null);
                       HelperFunction.saveNameInSharedPreference(null);
                       HelperFunction.saveUserEmailInSharedPreference(null);
                       HelperFunction.saveSpecialNotesCountInSharedPreference(

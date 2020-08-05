@@ -16,6 +16,7 @@ import 'package:notes_app/helper/constants.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/pages/profile_page.dart';
+import 'package:notes_app/pages/special_notes_display.dart';
 import 'package:notes_app/services/auth.dart';
 import 'package:notes_app/services/database.dart';
 import 'package:toast/toast.dart';
@@ -116,9 +117,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool isSearching;
   bool searchEnabled;
   bool showAds = false;
+  String userUid;
 
   @override
   void initState() {
+    HelperFunction.getUserUidFromSharedPreference().then((value) {
+      setState(() {
+        userUid = value;
+        print("User Uid is " + userUid);
+      });
+    });
     getUserInfo();
     isSearching = false;
     searchEnabled = false;
@@ -135,22 +143,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     title = "Add note heading";
     categoryIndex = widget.index == null ? 1 : widget.index;
     isImportant = true;
+    FirebaseAdMob.instance.initialize(appId: AdManager.appId);
+    bannerAd = createBannerAd()
+      ..load()
+      ..show();
 //    _nativeAdmob.initialize(appID: AdManager.appId);
-    HelperFunction.getAdsPrevInSharedPreference().then((value) {
-      if(value != null && value == true){
-        showAds = true;
-        FirebaseAdMob.instance.initialize(appId: AdManager.appId);
-        bannerAd = createBannerAd()
-          ..load()
-          ..show();
-      }else{
-        showAds = false;
-      }
-    });
+    // HelperFunction.getAdsPrevInSharedPreference().then((value) {
+    //   if (value != null && value == true) {
+    //     setState(() {
+    //       showAds = true;
+    //     });
+    //     FirebaseAdMob.instance.initialize(appId: AdManager.appId);
+    //     bannerAd = createBannerAd()
+    //       ..load()
+    //       ..show();
+    //   } else {
+    //     setState(() {
+    //       showAds = false;
+    //     });
+    //   }
+    // });
   }
 
   @override
   void dispose() {
+    // if (showAds == true) {
+    //   bannerAd.dispose();
+    // }
     bannerAd.dispose();
     super.dispose();
   }
@@ -196,6 +215,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               builder: (_) => SpecialNotesCreationPage(
                     description: finalSentences,
                     category: "special_notes",
+                    uid: userUid,
                   )));
     }
   }
@@ -251,11 +271,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             builder: (_) => SpecialNotesCreationPage(
                   description: finalSentences,
                   category: "special_notes",
+                  uid: userUid,
                 )));
   }
 
-  getNotesLength({String email}) {
-    databaseMethods.getNotesLength(notesRoomId: email).then((value) {
+  getNotesLength({String uid}) {
+    databaseMethods.getNotesLength(notesRoomId: uid).then((value) {
       notesLengthSnapshot = value;
       setState(() {
         notesLength = notesLengthSnapshot.documents.length;
@@ -263,20 +284,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     });
   }
 
-  getImportantNotes({String email}) {
-    databaseMethods.getImportantNotes(notesRoomId: email).then((value) {
+  getImportantNotes({String uid}) {
+    databaseMethods.getImportantNotes(notesRoomId: uid).then((value) {
       importanNotesStream = value;
     });
   }
 
-  getSpecialImportantNotes({String email}) {
-    databaseMethods.getSpecialImportantNotes(notesRoomId: email).then((value) {
+  getSpecialImportantNotes({String uid}) {
+    databaseMethods.getSpecialImportantNotes(notesRoomId: uid).then((value) {
       specialImportantNotesStream = value;
     });
   }
 
-  getSpecialNotesLength({String email}) {
-    databaseMethods.getSpecialNotesLength(notesRoomId: email).then((value) {
+  getSpecialNotesLength({String uid}) {
+    databaseMethods.getSpecialNotesLength(notesRoomId: uid).then((value) {
       specialNotesLengthSnapshot = value;
       setState(() {
         specialNotesLength = specialNotesLengthSnapshot.documents.length;
@@ -301,13 +322,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
-  getNotesInfo() async {
-    await databaseMethods.getNotes(notesRoomId: email).then((value) {
-      setState(() {
-        notesStream = value;
-        // print(notesStream);
+  getNotesInfo({String uid}) async {
+    print("Before notes Stream");
+    print(uid);
+    if (uid != null) {
+      await databaseMethods.getNotes(notesRoomId: uid).then((value) {
+        // print("User uid inside notes stream function is " + uid);
+        setState(() {
+          notesStream = value;
+          print("After notes Stream");
+          print(uid);
+          // print(notesStream);
+        });
       });
-    });
+    }
   }
 
   getUserInfo() async {
@@ -358,39 +386,42 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         });
       }
     });
-
-    getNotesInfo();
-    getNotesLength(email: email);
-    getSpecialNotesLength(email: email);
-    getSpecialNotes(email: email);
-    getImportantNotes(email: email);
-    getSpecialImportantNotes(email: email);
+    print("Just beore calling the function");
+    print(userUid);
+    getNotesInfo(uid: userUid);
+    getNotesLength(uid: userUid);
+    getSpecialNotesLength(uid: userUid);
+    getSpecialNotes(uid: userUid);
+    getImportantNotes(uid: userUid);
+    getSpecialImportantNotes(uid: userUid);
   }
 
   createNotesRoom() {
     Map<String, dynamic> notesMap = {
       "name": name,
       "email": email,
+      "uid": userUid
     };
 
-    databaseMethods.createNoteRoom(notesRoomId: email, notesMap: notesMap);
+    databaseMethods.createNoteRoom(notesRoomId: userUid, notesMap: notesMap);
 
     databaseMethods.createDeletedNotesRoom(
-        deletedRoomId: email, deletedNotesMap: notesMap);
+        deletedRoomId: userUid, deletedNotesMap: notesMap);
   }
 
   createSpecialNotesRoom() {
     Map<String, dynamic> notesMap = {
       "name": name,
       "email": email,
+      "uid": userUid
     };
     databaseMethods.createSpecialNotesRoom(
-        notesRoomId: email, notesMap: notesMap);
+        notesRoomId: userUid, notesMap: notesMap);
     databaseMethods.createSpecialNotesDeleteRoom(
-        deleteRoomId: email, deletedNotesMap: notesMap);
+        deleteRoomId: userUid, deletedNotesMap: notesMap);
   }
 
-  notesList({Stream notesStreamlist}) {
+  notesList({Stream notesStreamlist, int secIndex}) {
     return StreamBuilder(
         stream: notesStreamlist,
         builder: (context, snapshot) {
@@ -439,28 +470,56 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             color: Colors.red),
                                       ),
                                       onPressed: () {
-                                        Map<String, dynamic> deletedNotesMap = {
-                                          "title": snapshot.data
-                                              .documents[index].data["title"],
-                                          "description": snapshot
-                                              .data
-                                              .documents[index]
-                                              .data["description"]
-                                        };
-                                        databaseMethods.addDeletedNotes(
-                                          deletedRoomId: email,
-                                          deletedNotesMap: deletedNotesMap,
-                                          title: snapshot.data.documents[index]
-                                              .data["title"],
-                                        );
-                                        databaseMethods.deleteNote(
-                                            notesRoomId: email,
-                                            documentId: snapshot
+                                        if (secIndex == 1) {
+                                          Map<String, dynamic> deletedNotesMap =
+                                              {
+                                            "title": snapshot.data
+                                                .documents[index].data["title"],
+                                            "description": snapshot
                                                 .data
                                                 .documents[index]
-                                                .data["title"]);
-                                        getNotesLength(email: email);
-                                        getSpecialNotesLength(email: email);
+                                                .data["description"],
+                                            "uid": userUid
+                                          };
+                                          databaseMethods.addDeletedNotes(
+                                            deletedRoomId: userUid,
+                                            deletedNotesMap: deletedNotesMap,
+                                            title: snapshot.data
+                                                .documents[index].data["title"],
+                                          );
+                                          databaseMethods.deleteNote(
+                                              notesRoomId: userUid,
+                                              documentId: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["title"]);
+                                        } else if (secIndex == 2) {
+                                          Map<String, dynamic> deletedNotesMap =
+                                              {
+                                            "title": snapshot.data
+                                                .documents[index].data["title"],
+                                            "description": snapshot
+                                                .data
+                                                .documents[index]
+                                                .data["description"],
+                                            "uid": userUid
+                                          };
+                                          databaseMethods
+                                              .addSpecialDeletedNotes(
+                                            deletedRoomId: userUid,
+                                            deletedNotesMap: deletedNotesMap,
+                                            title: snapshot.data
+                                                .documents[index].data["title"],
+                                          );
+                                          databaseMethods.deletSpecialNotes(
+                                              notesRoomId: userUid,
+                                              documentId: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["title"]);
+                                        }
+                                        getNotesLength(uid: userUid);
+                                        getSpecialNotesLength(uid: userUid);
                                         Navigator.pop(context);
                                       },
                                     ),
@@ -491,41 +550,80 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               children: [
                                 ListTile(
                                   onLongPress: () {
-                                    setState(() {
-                                      if (snapshot.data.documents[index]
-                                              .data["important"] ==
-                                          "false") {
-                                        isImportant = true;
-                                        Toast.show(
-                                            'Marked As Important', context,
-                                            duration: Toast.LENGTH_SHORT,
-                                            gravity: Toast.BOTTOM);
+                                    if (secIndex == 1) {
+                                      setState(() {
+                                        if (snapshot.data.documents[index]
+                                                .data["important"] ==
+                                            "false") {
+                                          isImportant = true;
+                                          Toast.show(
+                                              'Marked As Important', context,
+                                              duration: Toast.LENGTH_SHORT,
+                                              gravity: Toast.BOTTOM);
+                                        } else {
+                                          isImportant = false;
+                                          Toast.show(
+                                              'Marked As UnImportant', context,
+                                              duration: Toast.LENGTH_SHORT,
+                                              gravity: Toast.BOTTOM);
+                                        }
+                                      });
+                                      if (isImportant) {
+                                        Map<String, dynamic> importantMap = {
+                                          "important": "true"
+                                        };
+                                        databaseMethods.addImportantTag(
+                                            notesRoomId: userUid,
+                                            documentTitle: snapshot.data
+                                                .documents[index].data["title"],
+                                            importantMap: importantMap);
                                       } else {
-                                        isImportant = false;
-                                        Toast.show(
-                                            'Marked As UnImportant', context,
-                                            duration: Toast.LENGTH_SHORT,
-                                            gravity: Toast.BOTTOM);
+                                        Map<String, dynamic> importantMap = {
+                                          "important": "false"
+                                        };
+                                        databaseMethods.addImportantTag(
+                                            notesRoomId: userUid,
+                                            documentTitle: snapshot.data
+                                                .documents[index].data["title"],
+                                            importantMap: importantMap);
                                       }
-                                    });
-                                    if (isImportant) {
-                                      Map<String, dynamic> importantMap = {
-                                        "important": "true"
-                                      };
-                                      databaseMethods.addImportantTag(
-                                          notesRoomId: email,
-                                          documentTitle: snapshot.data
-                                              .documents[index].data["title"],
-                                          importantMap: importantMap);
-                                    } else {
-                                      Map<String, dynamic> importantMap = {
-                                        "important": "false"
-                                      };
-                                      databaseMethods.addImportantTag(
-                                          notesRoomId: email,
-                                          documentTitle: snapshot.data
-                                              .documents[index].data["title"],
-                                          importantMap: importantMap);
+                                    } else if (secIndex == 2) {
+                                      setState(() {
+                                        if (snapshot.data.documents[index]
+                                                .data["important"] ==
+                                            "false") {
+                                          isImportant = true;
+                                          Toast.show(
+                                              'Marked As Important', context,
+                                              duration: Toast.LENGTH_SHORT,
+                                              gravity: Toast.BOTTOM);
+                                        } else {
+                                          isImportant = false;
+                                          Toast.show(
+                                              'Marked As UnImportant', context,
+                                              duration: Toast.LENGTH_SHORT,
+                                              gravity: Toast.BOTTOM);
+                                        }
+                                      });
+                                      if (isImportant) {
+                                        Map<String, dynamic> importantMap = {
+                                          "important": "true"
+                                        };
+                                        databaseMethods.addSpecialImportantTag(
+                                            notesRoomId: userUid,
+                                            documentTitle: snapshot.data
+                                                .documents[index].data["title"],
+                                            importantMap: importantMap);
+                                      } else {
+                                        Map<String, dynamic> importantMap = {
+                                          "important": "false"
+                                        };
+                                        databaseMethods.addSpecialImportantTag(
+                                            notesRoomId: userUid,
+                                            documentTitle: snapshot.data
+                                                .documents[index].data["title"],
+                                            importantMap: importantMap);
+                                      }
                                     }
                                   },
                                   enabled: true,
@@ -537,23 +635,46 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               .backgroundColor
                                               .withOpacity(0.5)),
                                   onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => NotesDisplayPage(
-                                                  title: snapshot
-                                                      .data
-                                                      .documents[index]
-                                                      .data["title"],
-                                                  description: snapshot
-                                                      .data
-                                                      .documents[index]
-                                                      .data["description"],
-                                                  category: snapshot
-                                                      .data
-                                                      .documents[index]
-                                                      .data["category"],
-                                                )));
+                                    if (secIndex == 1) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) => NotesDisplayPage(
+                                                    showAds: showAds,
+                                                    title: snapshot
+                                                        .data
+                                                        .documents[index]
+                                                        .data["title"],
+                                                    description: snapshot
+                                                        .data
+                                                        .documents[index]
+                                                        .data["description"],
+                                                    category: snapshot
+                                                        .data
+                                                        .documents[index]
+                                                        .data["category"],
+                                                  )));
+                                    } else if (secIndex == 2) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  SpecialNotesDisplayPage(
+                                                    showAds: showAds,
+                                                    title: snapshot
+                                                        .data
+                                                        .documents[index]
+                                                        .data["title"],
+                                                    description: snapshot
+                                                        .data
+                                                        .documents[index]
+                                                        .data["description"],
+                                                    category: snapshot
+                                                        .data
+                                                        .documents[index]
+                                                        .data["category"],
+                                                  )));
+                                    }
                                   },
                                   title: Text(
                                     snapshot.data.documents[index].data["title"]
@@ -586,39 +707,78 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             )
                           : ListTile(
                               onLongPress: () {
-                                setState(() {
-                                  if (snapshot.data.documents[index]
-                                          .data["important"] ==
-                                      "false") {
-                                    isImportant = true;
-                                    Toast.show('Marked As Important', context,
-                                        duration: Toast.LENGTH_SHORT,
-                                        gravity: Toast.BOTTOM);
+                                if (secIndex == 1) {
+                                  setState(() {
+                                    if (snapshot.data.documents[index]
+                                            .data["important"] ==
+                                        "false") {
+                                      isImportant = true;
+                                      Toast.show('Marked As Important', context,
+                                          duration: Toast.LENGTH_SHORT,
+                                          gravity: Toast.BOTTOM);
+                                    } else {
+                                      isImportant = false;
+                                      Toast.show(
+                                          'Marked As UnImportant', context,
+                                          duration: Toast.LENGTH_SHORT,
+                                          gravity: Toast.BOTTOM);
+                                    }
+                                  });
+                                  if (isImportant) {
+                                    Map<String, dynamic> importantMap = {
+                                      "important": "true"
+                                    };
+                                    databaseMethods.addImportantTag(
+                                        notesRoomId: userUid,
+                                        documentTitle: snapshot.data
+                                            .documents[index].data["title"],
+                                        importantMap: importantMap);
                                   } else {
-                                    isImportant = false;
-                                    Toast.show('Marked As UnImportant', context,
-                                        duration: Toast.LENGTH_SHORT,
-                                        gravity: Toast.BOTTOM);
+                                    Map<String, dynamic> importantMap = {
+                                      "important": "false"
+                                    };
+                                    databaseMethods.addImportantTag(
+                                        notesRoomId: userUid,
+                                        documentTitle: snapshot.data
+                                            .documents[index].data["title"],
+                                        importantMap: importantMap);
                                   }
-                                });
-                                if (isImportant) {
-                                  Map<String, dynamic> importantMap = {
-                                    "important": "true"
-                                  };
-                                  databaseMethods.addImportantTag(
-                                      notesRoomId: email,
-                                      documentTitle: snapshot
-                                          .data.documents[index].data["title"],
-                                      importantMap: importantMap);
-                                } else {
-                                  Map<String, dynamic> importantMap = {
-                                    "important": "false"
-                                  };
-                                  databaseMethods.addImportantTag(
-                                      notesRoomId: email,
-                                      documentTitle: snapshot
-                                          .data.documents[index].data["title"],
-                                      importantMap: importantMap);
+                                } else if (secIndex == 2) {
+                                  setState(() {
+                                    if (snapshot.data.documents[index]
+                                            .data["important"] ==
+                                        "false") {
+                                      isImportant = true;
+                                      Toast.show('Marked As Important', context,
+                                          duration: Toast.LENGTH_SHORT,
+                                          gravity: Toast.BOTTOM);
+                                    } else {
+                                      isImportant = false;
+                                      Toast.show(
+                                          'Marked As UnImportant', context,
+                                          duration: Toast.LENGTH_SHORT,
+                                          gravity: Toast.BOTTOM);
+                                    }
+                                  });
+                                  if (isImportant) {
+                                    Map<String, dynamic> importantMap = {
+                                      "important": "true"
+                                    };
+                                    databaseMethods.addSpecialImportantTag(
+                                        notesRoomId: userUid,
+                                        documentTitle: snapshot.data
+                                            .documents[index].data["title"],
+                                        importantMap: importantMap);
+                                  } else {
+                                    Map<String, dynamic> importantMap = {
+                                      "important": "false"
+                                    };
+                                    databaseMethods.addSpecialImportantTag(
+                                        notesRoomId: userUid,
+                                        documentTitle: snapshot.data
+                                            .documents[index].data["title"],
+                                        importantMap: importantMap);
+                                  }
                                 }
                               },
                               enabled: true,
@@ -750,7 +910,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    SizeConstants().init(context);
+    if (showAds != null) {
+      SizeConstants(showAds: showAds).init(context);
+    }
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
@@ -759,7 +921,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: Container(
             color: Theme.of(context).backgroundColor,
             height: screenHeight,
-            padding: EdgeInsets.only(bottom: SizeConstants.bottomPadding),
+            padding: EdgeInsets.only(bottom: 55), //SizeConstants.bottomPadding
             width: screenWidth,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -843,23 +1005,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 //                                            Theme.of(context).indicatorColor)),
                                 SizedBox(width: 10),
                                 GestureDetector(
-                                  onTap:(){
-                                    Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => ProfilePage(
-                                              name: name,
-                                              userEmail: email,
-                                              notesLength: notesLength,
-                                              specialNotesLength:
-                                                  specialNotesLength,
-                                            )));
-                                  },
-                                  child:Icon( 
-                                    Icons.settings,
-                                    color:Theme.of(context).indicatorColor
-                                  )
-                                )
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) => ProfilePage(
+                                                    name: name,
+                                                    userEmail: email,
+                                                    notesLength: notesLength,
+                                                    specialNotesLength:
+                                                        specialNotesLength,
+                                                  )));
+                                    },
+                                    child: Icon(Icons.settings,
+                                        color:
+                                            Theme.of(context).indicatorColor))
                                 // GestureDetector(
                                 //   child: Container(
                                 //       padding: EdgeInsets.all(2.0),
@@ -1003,7 +1163,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => NotesCreatorPage()));
+                                      builder: (_) =>
+                                          NotesCreatorPage(uid: userUid)));
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -1135,8 +1296,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget tabBarViewWidget() {
     return TabBarView(controller: tabController, children: [
-      categoryIndex == 1 ? notesList(notesStreamlist: notesStream)
-          : notesList(notesStreamlist: specialNotesStream),
+      categoryIndex == 1
+          ? notesList(notesStreamlist: notesStream, secIndex: 1)
+          : notesList(notesStreamlist: specialNotesStream, secIndex: 2),
       categoryIndex == 1
           ? getImportantNotesList(notesStreamList: importanNotesStream)
           : getImportantNotesList(notesStreamList: specialImportantNotesStream),
@@ -1145,27 +1307,42 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget searchNotesList({Stream searchStream}) {
     return StreamBuilder(
-      stream:searchStream,
-      builder: (context, snapshot){
-        return snapshot.hasData ? ListView.builder(
-          itemCount: snapshot.data.documents.length,
-          itemBuilder: (context, index) {
-            print("Title is " + snapshot.data.documents[index].data["title"]);
-            return snapshot.data.documents[index].data["title"].contains(searchController.text) ? ListTile(
-              title: Text(snapshot.data.documents[index].data["title"],
-                  style: TextStyle(color: Theme.of(context).indicatorColor)),
-              subtitle: Text(snapshot.data.documents[index].data["description"],
-                  maxLines: 1,
-                  style: TextStyle(color: Theme.of(context).indicatorColor)),
-            ):Container();
-          },
-        ):Container(child: Center(child: CircularProgressIndicator(),),);
+      stream: searchStream,
+      builder: (context, snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                itemCount: snapshot.data.documents.length,
+                itemBuilder: (context, index) {
+                  print("Title is " +
+                      snapshot.data.documents[index].data["title"]);
+                  return snapshot.data.documents[index].data["title"]
+                          .contains(searchController.text)
+                      ? ListTile(
+                          title: Text(
+                              snapshot.data.documents[index].data["title"],
+                              style: TextStyle(
+                                  color: Theme.of(context).indicatorColor)),
+                          subtitle: Text(
+                              snapshot
+                                  .data.documents[index].data["description"],
+                              maxLines: 1,
+                              style: TextStyle(
+                                  color: Theme.of(context).indicatorColor)),
+                        )
+                      : Container();
+                },
+              )
+            : Container(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
       },
     );
   }
 
-  getSpecialNotes({String email}) {
-    databaseMethods.getSpecialNotes(notesRoomId: email).then((value) {
+  getSpecialNotes({String uid}) {
+    databaseMethods.getSpecialNotes(notesRoomId: uid).then((value) {
       specialNotesStream = value;
     });
   }

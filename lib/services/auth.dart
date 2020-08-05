@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/services/database.dart';
+import 'package:notes_app/services/user.dart';
 
 DatabaseMethods databaseMethods = new DatabaseMethods();
 bool isEmailCorrect;
@@ -13,9 +14,10 @@ bool isValidAttempt;
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // User _userFromFirebase(FirebaseUser user) {
-  //   return user != null ? User(userId: user.uid) : null;
-  // }
+  String userFromFirebase(FirebaseUser user) {
+    // return user != null ? User(userId: user.uid) : null;
+    return user != null ? user.uid : null;
+  }
 
   Future signInUsingEmail({String email, String password}) async {
     try {
@@ -23,6 +25,9 @@ class AuthMethods {
           email: email, password: password);
       FirebaseUser user = authResult.user;
       if (user.isEmailVerified) {
+        String userUid = userFromFirebase(user);
+        HelperFunction.saveUserUidInSharedPreferences(userUid);
+        print("User uid is " + userUid);
         HelperFunction.saveUserPasswordCorrectState(true);
         HelperFunction.saveUserEmailCorrectState(true);
         HelperFunction.saveIsValidAttemptState(true);
