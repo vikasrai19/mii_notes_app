@@ -11,6 +11,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart' as IP;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:notes_app/class/user.dart';
 import 'package:notes_app/helper/ad_manager.dart';
 import 'package:notes_app/helper/constants.dart';
 import 'package:notes_app/helper/helper_functions.dart';
@@ -82,6 +83,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         });
   }
 
+  User user = new User();
   TabController tabController;
   TabController specialTabController;
   AuthMethods authMethods = new AuthMethods();
@@ -116,15 +118,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final CalendarPlugin calendarPlugin = CalendarPlugin();
   bool isSearching;
   bool searchEnabled;
-  bool showAds = false;
   String userUid;
+  bool showAds = false;
 
   @override
   void initState() {
     HelperFunction.getUserUidFromSharedPreference().then((value) {
       setState(() {
+        // userUid = value;
+        user.setUserUid = value;
         userUid = value;
-        print("User Uid is " + userUid);
+        print("User Uid is " + user.getUserUid);
       });
     });
     getUserInfo();
@@ -215,7 +219,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               builder: (_) => SpecialNotesCreationPage(
                     description: finalSentences,
                     category: "special_notes",
-                    uid: userUid,
+                    uid: user.getUserUid,
                   )));
     }
   }
@@ -271,7 +275,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             builder: (_) => SpecialNotesCreationPage(
                   description: finalSentences,
                   category: "special_notes",
-                  uid: userUid,
+                  uid: user.getUserUid,
                 )));
   }
 
@@ -324,7 +328,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   getNotesInfo({String uid}) async {
     print("Before notes Stream");
-    print(uid);
+    print(user);
     if (uid != null) {
       await databaseMethods.getNotes(notesRoomId: uid).then((value) {
         // print("User uid inside notes stream function is " + uid);
@@ -387,38 +391,39 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       }
     });
     print("Just beore calling the function");
-    print(userUid);
-    getNotesInfo(uid: userUid);
-    getNotesLength(uid: userUid);
-    getSpecialNotesLength(uid: userUid);
-    getSpecialNotes(uid: userUid);
-    getImportantNotes(uid: userUid);
-    getSpecialImportantNotes(uid: userUid);
+    print(user.getUserUid);
+    getNotesInfo(uid: user.getUserUid);
+    getNotesLength(uid: user.getUserUid);
+    getSpecialNotesLength(uid: user.getUserUid);
+    getSpecialNotes(uid: user.getUserUid);
+    getImportantNotes(uid: user.getUserUid);
+    getSpecialImportantNotes(uid: user.getUserUid);
   }
 
   createNotesRoom() {
     Map<String, dynamic> notesMap = {
       "name": name,
       "email": email,
-      "uid": userUid
+      "uid": user.getUserUid
     };
 
-    databaseMethods.createNoteRoom(notesRoomId: userUid, notesMap: notesMap);
+    databaseMethods.createNoteRoom(
+        notesRoomId: user.getUserUid, notesMap: notesMap);
 
     databaseMethods.createDeletedNotesRoom(
-        deletedRoomId: userUid, deletedNotesMap: notesMap);
+        deletedRoomId: user.getUserUid, deletedNotesMap: notesMap);
   }
 
   createSpecialNotesRoom() {
     Map<String, dynamic> notesMap = {
       "name": name,
       "email": email,
-      "uid": userUid
+      "uid": user.getUserUid
     };
     databaseMethods.createSpecialNotesRoom(
-        notesRoomId: userUid, notesMap: notesMap);
+        notesRoomId: user.getUserUid, notesMap: notesMap);
     databaseMethods.createSpecialNotesDeleteRoom(
-        deleteRoomId: userUid, deletedNotesMap: notesMap);
+        deleteRoomId: user.getUserUid, deletedNotesMap: notesMap);
   }
 
   notesList({Stream notesStreamlist, int secIndex}) {
@@ -479,16 +484,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 .data
                                                 .documents[index]
                                                 .data["description"],
-                                            "uid": userUid
+                                            "uid": user.getUserUid
                                           };
                                           databaseMethods.addDeletedNotes(
-                                            deletedRoomId: userUid,
+                                            deletedRoomId: user.getUserUid,
                                             deletedNotesMap: deletedNotesMap,
                                             title: snapshot.data
                                                 .documents[index].data["title"],
                                           );
                                           databaseMethods.deleteNote(
-                                              notesRoomId: userUid,
+                                              notesRoomId: user.getUserUid,
                                               documentId: snapshot
                                                   .data
                                                   .documents[index]
@@ -502,24 +507,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 .data
                                                 .documents[index]
                                                 .data["description"],
-                                            "uid": userUid
+                                            "uid": user.getUserUid
                                           };
                                           databaseMethods
                                               .addSpecialDeletedNotes(
-                                            deletedRoomId: userUid,
+                                            deletedRoomId: user.getUserUid,
                                             deletedNotesMap: deletedNotesMap,
                                             title: snapshot.data
                                                 .documents[index].data["title"],
                                           );
                                           databaseMethods.deletSpecialNotes(
-                                              notesRoomId: userUid,
+                                              notesRoomId: user.getUserUid,
                                               documentId: snapshot
                                                   .data
                                                   .documents[index]
                                                   .data["title"]);
                                         }
-                                        getNotesLength(uid: userUid);
-                                        getSpecialNotesLength(uid: userUid);
+                                        getNotesLength(uid: user.getUserUid);
+                                        getSpecialNotesLength(
+                                            uid: user.getUserUid);
                                         Navigator.pop(context);
                                       },
                                     ),
@@ -532,6 +538,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               context,
                               MaterialPageRoute(
                                   builder: (_) => NotesEditingPage(
+                                        // uid: user.getUserUid,
                                         title: snapshot.data.documents[index]
                                             .data["title"],
                                         description: snapshot
@@ -573,7 +580,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           "important": "true"
                                         };
                                         databaseMethods.addImportantTag(
-                                            notesRoomId: userUid,
+                                            notesRoomId: user.getUserUid,
                                             documentTitle: snapshot.data
                                                 .documents[index].data["title"],
                                             importantMap: importantMap);
@@ -582,7 +589,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           "important": "false"
                                         };
                                         databaseMethods.addImportantTag(
-                                            notesRoomId: userUid,
+                                            notesRoomId: user.getUserUid,
                                             documentTitle: snapshot.data
                                                 .documents[index].data["title"],
                                             importantMap: importantMap);
@@ -610,7 +617,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           "important": "true"
                                         };
                                         databaseMethods.addSpecialImportantTag(
-                                            notesRoomId: userUid,
+                                            notesRoomId: user.getUserUid,
                                             documentTitle: snapshot.data
                                                 .documents[index].data["title"],
                                             importantMap: importantMap);
@@ -619,7 +626,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           "important": "false"
                                         };
                                         databaseMethods.addSpecialImportantTag(
-                                            notesRoomId: userUid,
+                                            notesRoomId: user.getUserUid,
                                             documentTitle: snapshot.data
                                                 .documents[index].data["title"],
                                             importantMap: importantMap);
@@ -641,6 +648,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           MaterialPageRoute(
                                               builder: (_) => NotesDisplayPage(
                                                     showAds: showAds,
+                                                    uid: userUid,
                                                     title: snapshot
                                                         .data
                                                         .documents[index]
@@ -729,7 +737,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       "important": "true"
                                     };
                                     databaseMethods.addImportantTag(
-                                        notesRoomId: userUid,
+                                        notesRoomId: user.getUserUid,
                                         documentTitle: snapshot.data
                                             .documents[index].data["title"],
                                         importantMap: importantMap);
@@ -738,7 +746,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       "important": "false"
                                     };
                                     databaseMethods.addImportantTag(
-                                        notesRoomId: userUid,
+                                        notesRoomId: user.getUserUid,
                                         documentTitle: snapshot.data
                                             .documents[index].data["title"],
                                         importantMap: importantMap);
@@ -765,7 +773,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       "important": "true"
                                     };
                                     databaseMethods.addSpecialImportantTag(
-                                        notesRoomId: userUid,
+                                        notesRoomId: user.getUserUid,
                                         documentTitle: snapshot.data
                                             .documents[index].data["title"],
                                         importantMap: importantMap);
@@ -774,7 +782,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       "important": "false"
                                     };
                                     databaseMethods.addSpecialImportantTag(
-                                        notesRoomId: userUid,
+                                        notesRoomId: user.getUserUid,
                                         documentTitle: snapshot.data
                                             .documents[index].data["title"],
                                         importantMap: importantMap);
@@ -1163,8 +1171,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) =>
-                                          NotesCreatorPage(uid: userUid)));
+                                      builder: (_) => NotesCreatorPage(
+                                          uid: user.getUserUid)));
                             },
                             child: Container(
                               decoration: BoxDecoration(

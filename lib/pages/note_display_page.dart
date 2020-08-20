@@ -17,9 +17,15 @@ class NotesDisplayPage extends StatefulWidget {
   final String description;
   final String category;
   final bool showAds;
+  final String uid;
 
   NotesDisplayPage(
-      {Key key, this.title, this.description, this.category, this.showAds})
+      {Key key,
+      this.title,
+      this.description,
+      this.category,
+      this.showAds,
+      this.uid})
       : super(key: key);
 
   @override

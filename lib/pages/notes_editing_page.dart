@@ -9,8 +9,12 @@ class NotesEditingPage extends StatefulWidget {
   final String description;
   final String category;
 
-  NotesEditingPage({Key key, this.title, this.description, this.category})
-      : super(key: key);
+  NotesEditingPage({
+    Key key,
+    this.title,
+    this.description,
+    this.category,
+  }) : super(key: key);
 
   @override
   _NotesEditingPageState createState() => _NotesEditingPageState();
@@ -24,6 +28,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
   String noteTitle;
   String finalDescription;
   var _value;
+  String uid;
 
   @override
   void dispose() {
@@ -31,7 +36,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
     super.dispose();
   }
 
-  createNotes() {
+  updateNotes() {
     if (titleController.text.isNotEmpty) {
       // List<String> searchStringList = List();
       // String temp = "";
@@ -47,10 +52,11 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
         // "searchTerm": searchStringList
       };
       print("Description is " + finalDescription);
-      print("My email is " + email);
+      print("My uid is ");
+      print(uid);
 
       databaseMethods.updateNotes(
-          notesRoomId: email,
+          notesRoomId: uid,
           updateMap: notesMap,
           documentTitle: titleController.text);
     }
@@ -58,6 +64,12 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
 
   @override
   void initState() {
+    HelperFunction.getUserUidFromSharedPreference().then((value) {
+      setState(() {
+        // userUid = value;
+        uid = value;
+      });
+    });
     HelperFunction.getUserEmailFromSharedPreference().then((value) {
       setState(() {
         email = value;
@@ -157,7 +169,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                         GestureDetector(
                             onTap: () {
                               print("Save Button Pressed");
-                              createNotes();
+                              updateNotes();
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(

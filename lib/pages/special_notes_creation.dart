@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:notes_app/common_widgets/functions.dart';
+import 'package:notes_app/common_widgets/widgtes.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/services/database.dart';
@@ -24,31 +26,7 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
   String noteTitle = "";
   var _value;
   String finalDescription;
-
-  createNotes() {
-    if (titleController.text.isNotEmpty) {
-      List<String> searchStringList = List();
-      String temp = "";
-      for (var j = 0; j < titleController.text.length; j++) {
-        temp = temp + titleController.text[j];
-        searchStringList.add(temp);
-      }
-      Map<String, dynamic> notesMap = {
-        "title": titleController.text,
-        "description": finalDescription,
-        "time": DateTime.now().millisecondsSinceEpoch,
-        "category": _value,
-        "searchTerm": searchStringList,
-        "important": "false",
-        "uid": widget.uid
-      };
-
-      databaseMethods.addSpecialNotes(
-          notesMap: notesMap,
-          notesRoomId: widget.uid,
-          title: titleController.text);
-    }
-  }
+  bool isEdited = true;
 
   @override
   void initState() {
@@ -112,7 +90,16 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.pop(context);
+                                  backNotifierAlert(
+                                    context,
+                                    isEdited: isEdited,
+                                    title: titleController.text,
+                                    desc: finalDescription,
+                                    value: _value,
+                                    index: 2,
+                                    uid:widget.uid,
+                                    // createNotes: createNotes()
+                                  );
                                 },
                                 child: Container(
                                     height: 50,
@@ -145,7 +132,11 @@ class _SpecialNotesCreationPageState extends State<SpecialNotesCreationPage> {
                         GestureDetector(
                             onTap: () {
                               print("Save Button Pressed");
-                              createNotes();
+                              createSpecialNotes(
+                                  title: titleController.text,
+                                  desc: finalDescription,
+                                  uid: widget.uid,
+                                  value: _value);
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

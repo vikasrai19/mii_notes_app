@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:notes_app/class/user.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/services/database.dart';
-import 'package:notes_app/services/user.dart';
+
+User user = new User();
 
 DatabaseMethods databaseMethods = new DatabaseMethods();
 bool isEmailCorrect;

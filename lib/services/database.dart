@@ -294,7 +294,7 @@ class DatabaseMethods {
     Firestore.instance
         .collection("DeletedNotes")
         .document(deletedRoomId)
-        .collection("Deleted Notes")
+        .collection("DeletedNotes")
         .document(title)
         .setData(deletedNotesMap)
         .catchError((e) {
@@ -307,7 +307,7 @@ class DatabaseMethods {
     await Firestore.instance
         .collection("SpecialDeletedNotes")
         .document(deletedRoomId)
-        .collection("Deleted Notes")
+        .collection("DeletedNotes")
         .document(title)
         .setData(deletedNotesMap)
         .catchError((e) {

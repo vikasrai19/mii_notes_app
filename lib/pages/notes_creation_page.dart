@@ -1,51 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:notes_app/class/user.dart';
+import 'package:notes_app/common_widgets/functions.dart';
+import 'package:notes_app/common_widgets/widgtes.dart';
 import 'package:notes_app/helper/constants.dart';
 import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/services/database.dart';
 
 class NotesCreatorPage extends StatefulWidget {
-  String uid;
-  NotesCreatorPage({Key key, this.uid}) : super(key: key);
+  final String uid;
 
+  const NotesCreatorPage({Key key, this.uid}) : super(key: key);
   @override
   _NotesCreatorPageState createState() => _NotesCreatorPageState();
 }
 
 class _NotesCreatorPageState extends State<NotesCreatorPage> {
   TextEditingController titleController = TextEditingController();
+  // User user = new User();
   TextEditingController descController = TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   String noteTitle = "";
   String email;
   var _value;
   bool showAds;
-
-  createNotes() {
-    if (titleController.text.isNotEmpty && descController.text.isNotEmpty) {
-      List<String> searchStringList = List();
-      String temp = "";
-      for (var j = 0; j < titleController.text.length; j++) {
-        temp = temp + titleController.text[j];
-        searchStringList.add(temp);
-      }
-      Map<String, dynamic> notesMap = {
-        "title": titleController.text,
-        "description": descController.text,
-        "time": DateTime.now().millisecondsSinceEpoch,
-        "category": _value,
-        "important": "false",
-        "searchTerm": searchStringList,
-        "uid": widget.uid
-      };
-
-      databaseMethods.addNotes(
-          notesMap: notesMap,
-          notesRoomId: widget.uid,
-          title: titleController.text);
-    }
-  }
+  bool isEdited = false;
 
   @override
   void initState() {
@@ -120,7 +100,19 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.pop(context);
+                                  backNotifierAlert(context,
+                                      title: titleController.text,
+                                      desc: descController.text,
+                                      value: _value,
+                                      index: 1,
+                                      isEdited: isEdited,
+                                      uid: widget.uid
+                                      // createNotes: createNotes(
+                                      //     title: titleController.text,
+                                      //     desc: descController.text,
+                                      //     uid: widget.uid,
+                                      //     value: _value)
+                                      );
                                 },
                                 child: Container(
                                     height: 50,
@@ -154,7 +146,11 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                             onTap: () {
                               print("Save Button Pressed");
                               if (_value != null) {
-                                createNotes();
+                                createNotes(
+                                    title: titleController.text,
+                                    desc: descController.text,
+                                    uid: widget.uid,
+                                    value: _value);
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -244,6 +240,11 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                                 fontSize: 16.0),
                             border: InputBorder.none),
                         controller: descController,
+                        onChanged: (String) {
+                          setState(() {
+                            isEdited = true;
+                          });
+                        },
                         style: TextStyle(
                             color: Theme.of(context)
                                 .indicatorColor
