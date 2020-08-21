@@ -189,11 +189,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             //     vertical: 8.0, horizontal: 16.0),
                             child: GestureDetector(
                                 onTap: () {
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => HomePage()),
-                                      (route) => false);
+                                  Navigator.pop(context);
+//                                  Navigator.pushAndRemoveUntil(
+//                                      context,
+//                                      MaterialPageRoute(
+//                                          builder: (_) => HomePage()),
+//                                      (route) => false);
                                 },
                                 child: Icon(Icons.arrow_back,
                                     color: Theme.of(context).primaryColor)),

@@ -4,6 +4,8 @@ import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/services/database.dart';
 
+import 'homepage.dart';
+
 class NotesEditingPage extends StatefulWidget {
   final String title;
   final String description;
@@ -173,11 +175,7 @@ class _NotesEditingPageState extends State<NotesEditingPage> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => NotesDisplayPage(
-                                            title: titleController.text,
-                                            description: finalDescription,
-                                            category: _value,
-                                          )));
+                                      builder: (_) => HomePage(index:1)));
                             },
                             child: Container(
                               height: 40.0,

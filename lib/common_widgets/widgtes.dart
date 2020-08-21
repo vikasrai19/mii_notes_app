@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/common_widgets/functions.dart';
+import 'package:notes_app/pages/homepage.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/pages/special_notes_display.dart';
 
@@ -47,25 +48,17 @@ Future backNotifierAlert(BuildContext context,
                     if (index == 1) {
                       createNotes(
                           title: title, desc: desc, value: value, uid: uid);
-                      Navigator.push(
+                      Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => NotesDisplayPage(
-                                    title: title,
-                                    description: desc,
-                                    category: value,
-                                  )));
+                              builder: (_) => HomePage(index:1)));
                     } else if (index == 2) {
                       createSpecialNotes(
                           title: title, desc: desc, value: value, uid: uid);
-                      Navigator.push(
+                      Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => SpecialNotesDisplayPage(
-                                    title: title,
-                                    description: desc,
-                                    category: value,
-                                  )));
+                              builder: (_) => HomePage(index:1)));
                     }
                   }
                 },

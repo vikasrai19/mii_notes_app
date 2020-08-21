@@ -193,13 +193,13 @@ class _SpecialNotesDisplayPageState extends State<SpecialNotesDisplayPage> {
                               });
                               stop();
                             }
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => HomePage(
-                                          index: 2,
-                                        )),
-                                (route) => false);
+                            Navigator.pop(context);
+//                            Navigator.push(
+//                                context,
+//                                MaterialPageRoute(
+//                                    builder: (_) => HomePage(
+//                                          index: 2,
+//                                        )));
                           },
                           child: Container(
                             height: 40,

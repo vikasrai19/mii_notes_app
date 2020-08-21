@@ -7,7 +7,6 @@ import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart' as IP;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -444,276 +443,124 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     }
 
                     return Dismissible(
-                      key: Key(snapshot.data.documents[index].data["title"]),
-                      background: slideRightBackground(),
-                      secondaryBackground: slideLeftBackground(),
-                      confirmDismiss: (direction) async {
-                        if (direction == DismissDirection.endToStart) {
-                          final bool res = await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: Text(
-                                      "Are you sure you want to delete ${snapshot.data.documents[index].data["title"]}?",
-                                      style: GoogleFonts.montserrat(
-                                          color: Colors.black)),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      child: Text(
-                                        "Cancel",
+                        key: Key(snapshot.data.documents[index].data["title"]),
+                        background: slideRightBackground(),
+                        secondaryBackground: slideLeftBackground(),
+                        confirmDismiss: (direction) async {
+                          if (direction == DismissDirection.endToStart) {
+                            final bool res = await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: Text(
+                                        "Are you sure you want to delete ${snapshot.data.documents[index].data["title"]}?",
                                         style: GoogleFonts.montserrat(
-                                            color: Colors.black),
+                                            color: Colors.black)),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text(
+                                          "Cancel",
+                                          style: GoogleFonts.montserrat(
+                                              color: Colors.black),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
                                       ),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    FlatButton(
-                                      child: Text(
-                                        "Delete",
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.red),
-                                      ),
-                                      onPressed: () {
-                                        if (secIndex == 1) {
-                                          Map<String, dynamic> deletedNotesMap =
-                                              {
-                                            "title": snapshot.data
-                                                .documents[index].data["title"],
-                                            "description": snapshot
-                                                .data
-                                                .documents[index]
-                                                .data["description"],
-                                            "uid": user.getUserUid
-                                          };
-                                          databaseMethods.addDeletedNotes(
-                                            deletedRoomId: user.getUserUid,
-                                            deletedNotesMap: deletedNotesMap,
-                                            title: snapshot.data
-                                                .documents[index].data["title"],
-                                          );
-                                          databaseMethods.deleteNote(
-                                              notesRoomId: user.getUserUid,
-                                              documentId: snapshot
+                                      FlatButton(
+                                        child: Text(
+                                          "Delete",
+                                          style: GoogleFonts.montserrat(
+                                              color: Colors.red),
+                                        ),
+                                        onPressed: () {
+                                          if (secIndex == 1) {
+                                            Map<String, dynamic>
+                                                deletedNotesMap = {
+                                              "title": snapshot
                                                   .data
                                                   .documents[index]
-                                                  .data["title"]);
-                                        } else if (secIndex == 2) {
-                                          Map<String, dynamic> deletedNotesMap =
-                                              {
-                                            "title": snapshot.data
-                                                .documents[index].data["title"],
-                                            "description": snapshot
-                                                .data
-                                                .documents[index]
-                                                .data["description"],
-                                            "uid": user.getUserUid
-                                          };
-                                          databaseMethods
-                                              .addSpecialDeletedNotes(
-                                            deletedRoomId: user.getUserUid,
-                                            deletedNotesMap: deletedNotesMap,
-                                            title: snapshot.data
-                                                .documents[index].data["title"],
-                                          );
-                                          databaseMethods.deletSpecialNotes(
-                                              notesRoomId: user.getUserUid,
-                                              documentId: snapshot
+                                                  .data["title"],
+                                              "description": snapshot
                                                   .data
                                                   .documents[index]
-                                                  .data["title"]);
-                                        }
-                                        getNotesLength(uid: user.getUserUid);
-                                        getSpecialNotesLength(
-                                            uid: user.getUserUid);
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ],
-                                );
-                              });
-                          return res;
-                        } else {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => NotesEditingPage(
-                                        // uid: user.getUserUid,
-                                        title: snapshot.data.documents[index]
-                                            .data["title"],
-                                        description: snapshot
-                                            .data
-                                            .documents[index]
-                                            .data["description"],
-                                        category: snapshot.data.documents[index]
-                                            .data["category"],
-                                      )));
-                        }
-                      },
-                      child: index != 0 &&
-                              index % 3 == 0 &&
-                              index != snapshot.data.documents.length - 1
-                          ? Column(
-                              children: [
-                                ListTile(
-                                  onLongPress: () {
-                                    if (secIndex == 1) {
-                                      setState(() {
-                                        if (snapshot.data.documents[index]
-                                                .data["important"] ==
-                                            "false") {
-                                          isImportant = true;
-                                          Toast.show(
-                                              'Marked As Important', context,
-                                              duration: Toast.LENGTH_SHORT,
-                                              gravity: Toast.BOTTOM);
-                                        } else {
-                                          isImportant = false;
-                                          Toast.show(
-                                              'Marked As UnImportant', context,
-                                              duration: Toast.LENGTH_SHORT,
-                                              gravity: Toast.BOTTOM);
-                                        }
-                                      });
-                                      if (isImportant) {
-                                        Map<String, dynamic> importantMap = {
-                                          "important": "true"
-                                        };
-                                        databaseMethods.addImportantTag(
-                                            notesRoomId: user.getUserUid,
-                                            documentTitle: snapshot.data
-                                                .documents[index].data["title"],
-                                            importantMap: importantMap);
-                                      } else {
-                                        Map<String, dynamic> importantMap = {
-                                          "important": "false"
-                                        };
-                                        databaseMethods.addImportantTag(
-                                            notesRoomId: user.getUserUid,
-                                            documentTitle: snapshot.data
-                                                .documents[index].data["title"],
-                                            importantMap: importantMap);
-                                      }
-                                    } else if (secIndex == 2) {
-                                      setState(() {
-                                        if (snapshot.data.documents[index]
-                                                .data["important"] ==
-                                            "false") {
-                                          isImportant = true;
-                                          Toast.show(
-                                              'Marked As Important', context,
-                                              duration: Toast.LENGTH_SHORT,
-                                              gravity: Toast.BOTTOM);
-                                        } else {
-                                          isImportant = false;
-                                          Toast.show(
-                                              'Marked As UnImportant', context,
-                                              duration: Toast.LENGTH_SHORT,
-                                              gravity: Toast.BOTTOM);
-                                        }
-                                      });
-                                      if (isImportant) {
-                                        Map<String, dynamic> importantMap = {
-                                          "important": "true"
-                                        };
-                                        databaseMethods.addSpecialImportantTag(
-                                            notesRoomId: user.getUserUid,
-                                            documentTitle: snapshot.data
-                                                .documents[index].data["title"],
-                                            importantMap: importantMap);
-                                      } else {
-                                        Map<String, dynamic> importantMap = {
-                                          "important": "false"
-                                        };
-                                        databaseMethods.addSpecialImportantTag(
-                                            notesRoomId: user.getUserUid,
-                                            documentTitle: snapshot.data
-                                                .documents[index].data["title"],
-                                            importantMap: importantMap);
-                                      }
-                                    }
-                                  },
-                                  enabled: true,
-                                  trailing: isImportant != null && isImportant
-                                      ? Icon(MdiIcons.star,
-                                          color: Theme.of(context).primaryColor)
-                                      : Icon(MdiIcons.star,
-                                          color: Theme.of(context)
-                                              .backgroundColor
-                                              .withOpacity(0.5)),
-                                  onTap: () {
-                                    if (secIndex == 1) {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => NotesDisplayPage(
-                                                    showAds: showAds,
-                                                    uid: userUid,
-                                                    title: snapshot
-                                                        .data
-                                                        .documents[index]
-                                                        .data["title"],
-                                                    description: snapshot
-                                                        .data
-                                                        .documents[index]
-                                                        .data["description"],
-                                                    category: snapshot
-                                                        .data
-                                                        .documents[index]
-                                                        .data["category"],
-                                                  )));
-                                    } else if (secIndex == 2) {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  SpecialNotesDisplayPage(
-                                                    showAds: showAds,
-                                                    title: snapshot
-                                                        .data
-                                                        .documents[index]
-                                                        .data["title"],
-                                                    description: snapshot
-                                                        .data
-                                                        .documents[index]
-                                                        .data["description"],
-                                                    category: snapshot
-                                                        .data
-                                                        .documents[index]
-                                                        .data["category"],
-                                                  )));
-                                    }
-                                  },
-                                  title: Text(
-                                    snapshot.data.documents[index].data["title"]
-                                        .toString(),
-                                    style: GoogleFonts.montserrat(
-                                      color: Theme.of(context).indicatorColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18.0,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                  subtitle: Text(
-                                    snapshot.data.documents[index]
-                                        .data["description"]
-                                        .toString(),
-                                    style: GoogleFonts.montserrat(
-                                        color: Theme.of(context)
-                                            .indicatorColor
-                                            .withOpacity(0.6),
-                                        fontSize: 16.0),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                AdmobBanner(
-                                    adUnitId: getBannerAdUnitId(),
-                                    adSize: AdmobBannerSize.BANNER),
-                              ],
-                            )
-                          : ListTile(
+                                                  .data["description"],
+                                              "uid": user.getUserUid
+                                            };
+                                            databaseMethods.addDeletedNotes(
+                                              deletedRoomId: user.getUserUid,
+                                              deletedNotesMap: deletedNotesMap,
+                                              title: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["title"],
+                                            );
+                                            databaseMethods.deleteNote(
+                                                notesRoomId: user.getUserUid,
+                                                documentId: snapshot
+                                                    .data
+                                                    .documents[index]
+                                                    .data["title"]);
+                                          } else if (secIndex == 2) {
+                                            Map<String, dynamic>
+                                                deletedNotesMap = {
+                                              "title": snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["title"],
+                                              "description": snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["description"],
+                                              "uid": user.getUserUid
+                                            };
+                                            databaseMethods
+                                                .addSpecialDeletedNotes(
+                                              deletedRoomId: user.getUserUid,
+                                              deletedNotesMap: deletedNotesMap,
+                                              title: snapshot
+                                                  .data
+                                                  .documents[index]
+                                                  .data["title"],
+                                            );
+                                            databaseMethods.deletSpecialNotes(
+                                                notesRoomId: user.getUserUid,
+                                                documentId: snapshot
+                                                    .data
+                                                    .documents[index]
+                                                    .data["title"]);
+                                          }
+                                          getNotesLength(uid: user.getUserUid);
+                                          getSpecialNotesLength(
+                                              uid: user.getUserUid);
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                            return res;
+                          } else {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => NotesEditingPage(
+                                          title: snapshot.data.documents[index]
+                                              .data["title"],
+                                          description: snapshot
+                                              .data
+                                              .documents[index]
+                                              .data["description"],
+                                          category: snapshot
+                                              .data
+                                              .documents[index]
+                                              .data["category"],
+                                        )));
+                          }
+                        },
+                        child: Column(
+                          children: [
+                            ListTile(
                               onLongPress: () {
                                 if (secIndex == 1) {
                                   setState(() {
@@ -798,23 +645,47 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           .backgroundColor
                                           .withOpacity(0.5)),
                               onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => NotesDisplayPage(
-                                              title: snapshot
-                                                  .data
-                                                  .documents[index]
-                                                  .data["title"],
-                                              description: snapshot
-                                                  .data
-                                                  .documents[index]
-                                                  .data["description"],
-                                              category: snapshot
-                                                  .data
-                                                  .documents[index]
-                                                  .data["category"],
-                                            )));
+                                if (secIndex == 1) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => NotesDisplayPage(
+                                                showAds: showAds,
+                                                uid: userUid,
+                                                title: snapshot
+                                                    .data
+                                                    .documents[index]
+                                                    .data["title"],
+                                                description: snapshot
+                                                    .data
+                                                    .documents[index]
+                                                    .data["description"],
+                                                category: snapshot
+                                                    .data
+                                                    .documents[index]
+                                                    .data["category"],
+                                              )));
+                                } else if (secIndex == 2) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) =>
+                                              SpecialNotesDisplayPage(
+                                                showAds: showAds,
+                                                title: snapshot
+                                                    .data
+                                                    .documents[index]
+                                                    .data["title"],
+                                                description: snapshot
+                                                    .data
+                                                    .documents[index]
+                                                    .data["description"],
+                                                category: snapshot
+                                                    .data
+                                                    .documents[index]
+                                                    .data["category"],
+                                              )));
+                                }
                               },
                               title: Text(
                                 snapshot.data.documents[index].data["title"]
@@ -840,7 +711,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                    );
+                            index != 0 &&
+                                    index % 3 == 0 &&
+                                    index != snapshot.data.documents.length
+                                ? AdmobBanner(
+                                    adUnitId: getBannerAdUnitId(),
+                                    adSize: AdmobBannerSize.BANNER)
+                                : Container(),
+                          ],
+                        ));
                   })
               : Container(
                   child: Center(
@@ -918,6 +797,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+
+    HelperFunction.getUserProfileImageInSharedPreference().then((value){
+      setState((){
+        imageUrl = value;
+      });
+    });
+
     if (showAds != null) {
       SizeConstants(showAds: showAds).init(context);
     }
@@ -1366,103 +1252,57 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 physics: BouncingScrollPhysics(),
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
-                  return index != 0 &&
-                          index % 3 == 0 &&
-                          index != snapshot.data.documents.length - 1
-                      ? Column(
-                          children: [
-                            ListTile(
-                              enabled: true,
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => NotesDisplayPage(
-                                              title: snapshot
-                                                  .data
-                                                  .documents[index]
-                                                  .data["title"],
-                                              description: snapshot
-                                                  .data
-                                                  .documents[index]
-                                                  .data["description"],
-                                              category: snapshot
-                                                  .data
-                                                  .documents[index]
-                                                  .data["category"],
-                                            )));
-                              },
-                              title: Text(
-                                snapshot.data.documents[index].data["title"]
-                                    .toString(),
-                                style: GoogleFonts.montserrat(
-                                  color: Theme.of(context).indicatorColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                              subtitle: Text(
-                                snapshot
-                                    .data.documents[index].data["description"]
-                                    .toString(),
-                                style: GoogleFonts.montserrat(
-                                    color: Theme.of(context)
-                                        .indicatorColor
-                                        .withOpacity(0.7),
-                                    fontSize: 16.0),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            AdmobBanner(
-                                adUnitId: getBannerAdUnitId(),
-                                adSize: AdmobBannerSize.BANNER)
-                          ],
-                        )
-                      : ListTile(
-                          enabled: true,
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => NotesDisplayPage(
-                                          title: snapshot.data.documents[index]
-                                              .data["title"],
-                                          description: snapshot
-                                              .data
-                                              .documents[index]
-                                              .data["description"],
-                                          category: snapshot
-                                              .data
-                                              .documents[index]
-                                              .data["category"],
-                                        )));
-                          },
-                          title: Text(
-                            snapshot.data.documents[index].data["title"]
-                                .toString(),
-                            style: GoogleFonts.montserrat(
-                              color: Theme.of(context).indicatorColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.0,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                  return Column(
+                    children: [
+                      ListTile(
+                        enabled: true,
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => NotesDisplayPage(
+                                        title: snapshot.data.documents[index]
+                                            .data["title"],
+                                        description: snapshot
+                                            .data
+                                            .documents[index]
+                                            .data["description"],
+                                        category: snapshot.data.documents[index]
+                                            .data["category"],
+                                      )));
+                        },
+                        title: Text(
+                          snapshot.data.documents[index].data["title"]
+                              .toString(),
+                          style: GoogleFonts.montserrat(
+                            color: Theme.of(context).indicatorColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
                           ),
-                          subtitle: Text(
-                            snapshot.data.documents[index].data["description"]
-                                .toString(),
-                            style: GoogleFonts.montserrat(
-                                color: Theme.of(context)
-                                    .indicatorColor
-                                    .withOpacity(0.7),
-                                fontSize: 16.0),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        );
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        subtitle: Text(
+                          snapshot.data.documents[index].data["description"]
+                              .toString(),
+                          style: GoogleFonts.montserrat(
+                              color: Theme.of(context)
+                                  .indicatorColor
+                                  .withOpacity(0.7),
+                              fontSize: 16.0),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      index != 0 &&
+                              index % 3 == 0 &&
+                              index != snapshot.data.documents.length - 1
+                          ? AdmobBanner(
+                              adUnitId: getBannerAdUnitId(),
+                              adSize: AdmobBannerSize.BANNER)
+                          : Container()
+                    ],
+                  );
                 })
             : Container(
                 child: Center(

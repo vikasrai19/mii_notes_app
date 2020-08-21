@@ -216,11 +216,10 @@ class _NotesDisplayPageState extends State<NotesDisplayPage> {
                         GestureDetector(
                           onTap: () {
 //                            Navigator.of(context).popUntil((route) => route.isFirst);
-                            Navigator.pushAndRemoveUntil(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => HomePage(index: 1)),
-                                (route) => false);
+                                    builder: (_) => HomePage(index: 1)));
                           },
                           child: Container(
                             height: 40,

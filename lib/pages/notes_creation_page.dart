@@ -8,16 +8,20 @@ import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/note_display_page.dart';
 import 'package:notes_app/services/database.dart';
 
+import 'homepage.dart';
+
 class NotesCreatorPage extends StatefulWidget {
   final String uid;
 
   const NotesCreatorPage({Key key, this.uid}) : super(key: key);
+
   @override
   _NotesCreatorPageState createState() => _NotesCreatorPageState();
 }
 
 class _NotesCreatorPageState extends State<NotesCreatorPage> {
   TextEditingController titleController = TextEditingController();
+
   // User user = new User();
   TextEditingController descController = TextEditingController();
   DatabaseMethods databaseMethods = new DatabaseMethods();
@@ -151,14 +155,11 @@ class _NotesCreatorPageState extends State<NotesCreatorPage> {
                                     desc: descController.text,
                                     uid: widget.uid,
                                     value: _value);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => NotesDisplayPage(
-                                              title: titleController.text,
-                                              description: descController.text,
-                                              category: _value,
-                                            )));
+                                Navigator.pop(context);
+//                                Navigator.pushReplacement(
+//                                    context,
+//                                    MaterialPageRoute(
+//                                        builder: (_) => HomePage(index: 1)));
                               } else {
                                 alertDialog();
                               }

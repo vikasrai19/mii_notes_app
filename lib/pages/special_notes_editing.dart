@@ -6,6 +6,8 @@ import 'package:notes_app/helper/helper_functions.dart';
 import 'package:notes_app/pages/special_notes_display.dart';
 import 'package:notes_app/services/database.dart';
 
+import 'homepage.dart';
+
 class SpecialNotesEditingPage extends StatefulWidget {
   final String title;
   final String description;
@@ -134,14 +136,15 @@ class _SpecialNotesEditingPageState extends State<SpecialNotesEditingPage> {
                                   title: titleController.text,
                                   desc: finalDescription,
                                   value: _value);
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => SpecialNotesDisplayPage(
-                                            title: titleController.text,
-                                            description: finalDescription,
-                                            category: _value,
-                                          )));
+                              Navigator.push(context,MaterialPageRoute(builder:(_)=>HomePage(index:2)));
+//                              Navigator.push(
+//                                  context,
+//                                  MaterialPageRoute(
+//                                      builder: (_) => SpecialNotesDisplayPage(
+//                                            title: titleController.text,
+//                                            description: finalDescription,
+//                                            category: _value,
+//                                          )));
                             },
                             child: Container(
                               height: 40.0,
