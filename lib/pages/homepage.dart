@@ -797,9 +797,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
-    HelperFunction.getUserProfileImageInSharedPreference().then((value){
-      setState((){
+    HelperFunction.getUserProfileImageInSharedPreference().then((value) {
+      setState(() {
         imageUrl = value;
       });
     });
