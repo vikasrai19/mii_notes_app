@@ -80,9 +80,9 @@ class _MyAppState extends State<MyApp> {
 //           darkTheme: ThemeData.dark(),
             home: isViewed == null || isViewed == false
                 ? OnBoardScreen()
-                : isLoggedIn != null
+                : isLoggedIn != null 
                     ? isLoggedIn ? HomePage(index: 1) : Authenticate()
-                    : Authenticate(),
+                    : Authenticate(), 
 //             home: isLoggedIn != null
 //                ? isLoggedIn ? HomePage() : Authenticate()
 //                : Authenticate(),
@@ -92,3 +92,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+
